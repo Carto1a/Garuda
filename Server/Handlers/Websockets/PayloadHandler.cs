@@ -29,31 +29,31 @@ public class PayloadHandler
         };
     }
 
-    public async Task Handle(Payload<object> payload)
-    {
-        var op = payload.op;
+        public async Task Handle(Payload<object> payload)
+        {
+            var op = payload.op;
 
-        var func = _handlers[(int)op];
-        if (func == null)
-            throw new NotImplementedException();
+            var func = _handlers[(int)op];
+            if (func == null)
+                throw new NotImplementedException();
 
-        await func(payload);
-    }
+            await func(payload);
+        }
 
-    public Task Invoke(Payload<object> payload)
-    {
-        var data = payload.d as Invoke;
-        if (data == null)
-            throw new ArgumentNullException();
+        public Task Invoke(Payload<object> payload)
+        {
+            var data = payload.d as Invoke;
+            if (data == null)
+                throw new ArgumentNullException();
 
-        return _invokeHandler.Handle(data);
-    }
+            return _invokeHandler.Handle(data);
+        }
 
-    public Task Dispatch(Payload<object> payload)
-    {
-        var data = payload.d as Dispatch;
-        if (data == null)
-            throw new ArgumentNullException();
+        public Task Dispatch(Payload<object> payload)
+        {
+            var data = payload.d as Dispatch;
+            if (data == null)
+                throw new ArgumentNullException();
 
         return _dispatchHandler.Handle(data);
     }
