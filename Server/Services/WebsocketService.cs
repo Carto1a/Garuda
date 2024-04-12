@@ -1,13 +1,20 @@
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
+using Domain.Entities.Payloads;
+using Server.Handlers.Websockets.Intefaces;
 using Server.Services.Interfaces;
 
 namespace Server.Services;
 class WebsocketService
 : IWebsocketService
 {
-    public WebsocketService()
+    private readonly IPayloadHandler _payloadHandler;
+
+    public WebsocketService(
+        IPayloadHandler payloadHandler)
     {
+        _payloadHandler = payloadHandler;
     }
 
     public async Task OpenWebsocket(WebSocket ws)
@@ -28,10 +35,14 @@ class WebsocketService
             /* /1* await Task.Delay(1000); *1/ */
             if (payload.MessageType == WebSocketMessageType.Binary)
             {
-                var bin = Encoding.UTF8.GetString(buffer);
+                var bin = Encoding.UTF8.GetString(buffer).TrimEnd('\0');
                 Console.WriteLine(
                     $"Received message: {bin}");
 
+                var payloadObject = JsonSerializer
+                    .Deserialize<Payload<object>>(bin);
+
+                await _payloadHandler.Handle(payloadObject);
                 // await webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("Hello, World!")), WebSocketMessageType.Text, true, CancellationToken.None);
             }
             else if (payload.MessageType == WebSocketMessageType.Close)
