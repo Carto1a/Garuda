@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Domain.Entities.Payloads.Invoke;
 using Domain.Enums.Payloads;
 using Server.Handlers.Websockets.Intefaces;
@@ -6,10 +7,10 @@ namespace Server.Handlers.Websockets;
 public class InvokeHandler
 : IInvokeHandler
 {
-    private readonly IDictionary<string, Func<Invoke, Task>> _handler;
+    private readonly IDictionary<string, Func<string, Task>> _handler;
     public InvokeHandler()
     {
-        _handler = new Dictionary<string, Func<Invoke, Task>>
+        _handler = new Dictionary<string, Func<string, Task>>
         {
             [nameof(InvokeEvents.MESSAGE_CREATE)] = MessageCreate,
             [nameof(InvokeEvents.MESSAGE_UPDATE)] = MessageUpdate,
@@ -20,52 +21,54 @@ public class InvokeHandler
         };
     }
 
-    public Task Handle(Invoke data)
+    public Task Handle(string data)
     {
         Console.WriteLine("InvokeHandler.Handle");
-        if (data == null)
-            throw new ArgumentNullException();
-        if (data.event_name == null)
-            throw new ArgumentNullException();
+        string eventName;
+        using (JsonDocument document = JsonDocument.Parse(data))
+        {
+            eventName = document.RootElement.GetProperty("event_name").GetString()
+                ?? throw new ArgumentNullException();
+        }
 
-        var func = _handler[data.event_name];
+        var func = _handler[eventName];
         if (func == null)
             throw new NotImplementedException();
 
         return func(data);
     }
 
-    public Task Disconnect(Invoke data)
+    public Task Disconnect(string data)
     {
         Console.WriteLine("InvokeHandler.Disconnect");
         return Task.CompletedTask;
     }
 
-    public Task Join(Invoke data)
+    public Task Join(string data)
     {
         Console.WriteLine("InvokeHandler.Join");
         return Task.CompletedTask;
     }
 
-    public Task Leave(Invoke data)
+    public Task Leave(string data)
     {
         Console.WriteLine("InvokeHandler.Leave");
         return Task.CompletedTask;
     }
 
-    public Task MessageCreate(Invoke data)
+    public Task MessageCreate(string data)
     {
         Console.WriteLine("InvokeHandler.MessageCreate");
         return Task.CompletedTask;
     }
 
-    public Task MessageDelete(Invoke data)
+    public Task MessageDelete(string data)
     {
         Console.WriteLine("InvokeHandler.MessageDelete");
         return Task.CompletedTask;
     }
 
-    public Task MessageUpdate(Invoke data)
+    public Task MessageUpdate(string data)
     {
         Console.WriteLine("InvokeHandler.MessageUpdate");
         return Task.CompletedTask;

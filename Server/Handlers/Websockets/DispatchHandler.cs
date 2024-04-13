@@ -6,10 +6,10 @@ namespace Server.Handlers.Websockets;
 public class DispatchHandler
 : IDispatchHandler
 {
-    private readonly IDictionary<string, Func<Dispatch, Task>> _handler;
+    private readonly IDictionary<string, Func<string, Task>> _handler;
     public DispatchHandler()
     {
-        _handler = new Dictionary<string, Func<Dispatch, Task>>
+        _handler = new Dictionary<string, Func<string, Task>>
         {
             [nameof(DispatchEvents.MESSAGE_CREATED)] = MessageCreated,
             [nameof(DispatchEvents.MESSAGE_UPDATED)] = MessageUpdated,
@@ -20,52 +20,54 @@ public class DispatchHandler
         };
     }
 
-    public Task Handle(Dispatch data)
+    public Task Handle(string data)
     {
         Console.WriteLine("DispatchHandler.Handle");
         if (data == null)
             throw new ArgumentNullException();
-        if (data.event_name == null)
-            throw new ArgumentNullException();
 
-        var func = _handler[data.event_name];
-        if (func == null)
-            throw new NotImplementedException();
+        return Task.CompletedTask;
+        /* if (data.event_name == null) */
+        /*     throw new ArgumentNullException(); */
 
-        return func(data);
+        /* var func = _handler[data.event_name]; */
+        /* if (func == null) */
+        /*     throw new NotImplementedException(); */
+
+        /* return func(data); */
     }
 
-    public Task Disconnected(Dispatch data)
+    public Task Disconnected(string data)
     {
         Console.WriteLine("DispatchHandler.Disconnected");
         return Task.CompletedTask;
     }
 
-    public Task Joined(Dispatch data)
+    public Task Joined(string data)
     {
         Console.WriteLine("DispatchHandler.Joined");
         return Task.CompletedTask;
     }
 
-    public Task Lefted(Dispatch data)
+    public Task Lefted(string data)
     {
         Console.WriteLine("DispatchHandler.Lefted");
         return Task.CompletedTask;
     }
 
-    public Task MessageCreated(Dispatch data)
+    public Task MessageCreated(string data)
     {
         Console.WriteLine("DispatchHandler.MessageCreated");
         return Task.CompletedTask;
     }
 
-    public Task MessageDeleted(Dispatch data)
+    public Task MessageDeleted(string data)
     {
         Console.WriteLine("DispatchHandler.MessageDeleted");
         return Task.CompletedTask;
     }
 
-    public Task MessageUpdated(Dispatch data)
+    public Task MessageUpdated(string data)
     {
         Console.WriteLine("DispatchHandler.MessageUpdated");
         return Task.CompletedTask;
