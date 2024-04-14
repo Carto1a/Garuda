@@ -1,4 +1,4 @@
-namespace Server.Handlers.Websockets.Intefaces;
+namespace Server.Handlers.Websockets.Receive.Interfaces;
 public interface IDispatchHandler
 {
     Task Handle(string data);

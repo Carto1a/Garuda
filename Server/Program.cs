@@ -1,5 +1,7 @@
-using Server.Handlers.Websockets;
-using Server.Handlers.Websockets.Intefaces;
+using Server.Handlers.Websockets.Receive;
+using Server.Handlers.Websockets.Receive.Interfaces;
+using Server.Handlers.Websockets.Send;
+using Server.Handlers.Websockets.Send.Interfaces;
 using Server.Services;
 using Server.Services.Interfaces;
 
@@ -9,8 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<
-    IPayloadHandler,
-    PayloadHandler>();
+    IPayloadSendHandler,
+    PayloadSendHandler>();
+
+builder.Services.AddSingleton<
+    IPayloadReceiveHandler,
+    PayloadReceiveHandler>();
 
 builder.Services.AddSingleton<
     IInvokeHandler,

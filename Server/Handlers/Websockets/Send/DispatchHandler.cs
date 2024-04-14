@@ -1,8 +1,7 @@
-using Domain.Entities.Payloads.Dispatch;
 using Domain.Enums.Payloads;
-using Server.Handlers.Websockets.Intefaces;
+using Server.Handlers.Websockets.Receive.Interfaces;
 
-namespace Server.Handlers.Websockets;
+namespace Server.Handlers.Websockets.Send;
 public class DispatchHandler
 : IDispatchHandler
 {

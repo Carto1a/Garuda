@@ -1,10 +1,10 @@
-namespace Domain.Entities.Payloads.Dispatch;
-public class Dispatch
-{
-    public string? event_name { get; set; }
+using Domain.Enums.Payloads;
 
-    public Dispatch(string @event)
-    {
-        event_name = @event;
-    }
+namespace Domain.Entities.Payloads.Dispatch;
+public class Dispatch<Event>
+: Payload<Event>
+{
+    public Dispatch(string event_name, Event @event)
+    : base(OpCodes.Dispatch, @event, event_name)
+    { }
 }

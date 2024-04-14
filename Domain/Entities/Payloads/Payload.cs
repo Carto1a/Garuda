@@ -1,17 +1,18 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads;
-public class Payload<T>
+public class Payload<Type>
 {
     public OpCodes op { get; set; }
-    public T? d { get; set; }
-    /* public int S { get; set; } */
-    /* public string T { get; set; } */
+    public Type? d { get; set; }
+    public string? t { get; set; }
+    public int? s { get; set; }
 
     public Payload(
-        OpCodes op, T d)
+        OpCodes op, Type? d, string? t)
     {
         this.op = op;
         this.d = d;
+        this.t = t;
     }
 }

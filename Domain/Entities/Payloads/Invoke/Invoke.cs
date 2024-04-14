@@ -1,10 +1,12 @@
-namespace Domain.Entities.Payloads.Invoke;
-public class Invoke
-{
-    public string? event_name { get; set; }
+using Domain.Enums.Payloads;
 
-    public Invoke(string @event)
-    {
-        event_name = @event;
+namespace Domain.Entities.Payloads.Invoke;
+public class Invoke<Event>
+: Payload<Event>
+{
+    public Invoke(string event_name, Event @event)
+    : base(OpCodes.Dispatch, @event, event_name)
+    { 
+        
     }
 }

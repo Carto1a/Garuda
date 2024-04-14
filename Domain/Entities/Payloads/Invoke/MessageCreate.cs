@@ -2,7 +2,6 @@ using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Invoke;
 public class MessageCreate
-: Invoke
 {
     public Guid? room_id { get; set; }
     public string? content { get; set; }
@@ -10,9 +9,17 @@ public class MessageCreate
     public MessageCreate(
         string content,
         Guid room_id)
-    : base(nameof(InvokeEvents.MESSAGE_CREATE))
     {
         this.content = content;
         this.room_id = room_id;
+    }
+
+    public static Invoke<MessageCreate> Create(
+        string content,
+        Guid roomId)
+    {
+        return new Invoke<MessageCreate>(
+            nameof(InvokeEvents.MESSAGE_CREATE),
+            new MessageCreate(content, roomId));
     }
 }

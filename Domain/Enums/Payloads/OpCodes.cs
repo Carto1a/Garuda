@@ -1,11 +1,10 @@
 namespace Domain.Enums.Payloads;
 public enum OpCodes
 {
-    Dispatch,     // receive
-    Invoke,       // send
+    Dispatch,     // send, receive
     Heartbeat,    // send, receive
     Identify,     // send
     Hello,        // receive
     HeartbeatAck, // receive
-    Disconnect    // send
+    Disconnect    // send, receive
 }

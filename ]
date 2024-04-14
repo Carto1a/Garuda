@@ -15,10 +15,10 @@ var buffer = new byte[1024];
 
 Invoke<Join> joinPayload = Join.Create(Guid.NewGuid());
 
-byte[] jsonString = JsonSerializer.SerializeToUtf8Bytes(joinPayload);
+string jsonString = JsonSerializer.Serialize(Guid.NewGuid());
 
 await ws.SendAsync(
-    jsonString,
+    Encoding.UTF8.GetBytes(jsonString),
     WebSocketMessageType.Binary,
     true,
     CancellationToken.None);

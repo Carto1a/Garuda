@@ -2,19 +2,23 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Domain.Entities.Payloads;
-using Server.Handlers.Websockets.Intefaces;
+using Server.Handlers.Websockets.Receive.Interfaces;
+using Server.Handlers.Websockets.Send.Interfaces;
 using Server.Services.Interfaces;
 
 namespace Server.Services;
 class WebsocketService
 : IWebsocketService
 {
-    private readonly IPayloadHandler _payloadHandler;
+    private readonly IPayloadSendHandler _payloadSendHandler;
+    private readonly IPayloadReceiveHandler _payloadReceiveHandler;
 
     public WebsocketService(
-        IPayloadHandler payloadHandler)
+        IPayloadSendHandler payloadSendHandler,
+        IPayloadReceiveHandler payloadReceiveHandler)
     {
-        _payloadHandler = payloadHandler;
+        _payloadSendHandler = payloadSendHandler;
+        _payloadReceiveHandler = payloadReceiveHandler;
     }
 
     public async Task OpenWebsocket(WebSocket ws)
@@ -22,6 +26,12 @@ class WebsocketService
         var buffer = new byte[1024];
         while (ws.State == WebSocketState.Open)
         {
+            // send hello
+            // wait for identify
+            // and the heartbeat, wait heartbeat on thread
+
+
+
             var payload = await GetPayload(ws, buffer);
             if (payload == null)
                 break;
@@ -42,7 +52,7 @@ class WebsocketService
                 var payloadObject = JsonSerializer
                     .Deserialize<Payload<object>>(bin);
 
-                await _payloadHandler.Handle(payloadObject);
+                await _payloadReceiveHandler.Handle(buffer);
                 // await webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("Hello, World!")), WebSocketMessageType.Text, true, CancellationToken.None);
             }
             else if (payload.MessageType == WebSocketMessageType.Close)
