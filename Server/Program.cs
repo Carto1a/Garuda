@@ -11,6 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<
+    IInvokeHandler,
+    InvokeHandler>();
+
+builder.Services.AddSingleton<
+    IDispatchHandler,
+    DispatchHandler>();
+
+builder.Services.AddSingleton<
     IPayloadSendHandler,
     PayloadSendHandler>();
 
@@ -19,12 +27,8 @@ builder.Services.AddSingleton<
     PayloadReceiveHandler>();
 
 builder.Services.AddSingleton<
-    IInvokeHandler,
-    InvokeHandler>();
-
-builder.Services.AddSingleton<
-    IDispatchHandler,
-    DispatchHandler>();
+    IAuthenticatorService,
+    AuthenticatorService>();
 
 builder.Services.AddScoped<
     IWebsocketService,

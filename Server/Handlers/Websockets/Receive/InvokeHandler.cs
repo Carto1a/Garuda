@@ -16,7 +16,6 @@ public class InvokeHandler
             [nameof(InvokeEvents.MESSAGE_DELETE)] = MessageDelete,
             [nameof(InvokeEvents.JOIN)] = Join,
             [nameof(InvokeEvents.LEAVE)] = Leave,
-            [nameof(InvokeEvents.DISCONNECT)] = Disconnect
         };
     }
 
@@ -29,12 +28,6 @@ public class InvokeHandler
             throw new NotImplementedException();
 
         return func(payload);
-    }
-
-    public Task Disconnect(Payload<object> payload)
-    {
-        Console.WriteLine("InvokeHandler.Disconnect");
-        return Task.CompletedTask;
     }
 
     public Task Join(Payload<object> payload)

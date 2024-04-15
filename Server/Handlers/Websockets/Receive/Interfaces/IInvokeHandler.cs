@@ -10,5 +10,4 @@ public interface IInvokeHandler
     Task MessageDelete(Payload<object> payload);
     Task Join(Payload<object> payload);
     Task Leave(Payload<object> payload);
-    Task Disconnect(Payload<object> payload);
 }

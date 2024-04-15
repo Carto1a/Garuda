@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using Domain.Entities.Payloads;
+using Server.Entities.Websocket.Connections;
 using Server.Entities.Websocket.Payloads;
 using Server.Handlers.Websockets.Receive.Interfaces;
 using Server.Handlers.Websockets.Send.Interfaces;
@@ -35,32 +36,30 @@ public class PayloadSendHandler
         return _dispatchHandler.Handle(data);
     }
 
-    public Task Disconnect(WebSocket ws)
+    public Task Disconnect(WebsocketConnection ws)
     {
         Console.WriteLine("PayloadHandler.Disconnect");
+        // TODO: broadcast disconnect
+        // TODO: clear connection
         return Task.CompletedTask;
     }
 
-    public Task Heartbeat(WebSocket ws, int heartbeatInterval)
+    public Task Heartbeat(WebsocketConnection ws)
     {
         Console.WriteLine("PayloadHandler.Heartbeat");
-        Timer timer = new Timer(_ =>
-        {
-            Handle(ws, PayloadHeartbeat.Payload);
-        }, null, 0, heartbeatInterval);
-
-        return Task.CompletedTask;
+        ws.StartDisconnectTimer();
+        return Handle(ws.ws, PayloadHeartbeat.Payload);
     }
 
-    public Task HeartbeatAck(WebSocket ws)
+    public Task HeartbeatAck(WebsocketConnection ws)
     {
         Console.WriteLine("PayloadHandler.HeartbeatAck");
-        return Handle(ws, PayloadHeartbeat.Payload);
+        return Handle(ws.ws, PayloadHeartbeatAck.Payload);
     }
 
-    public Task Hello(WebSocket ws)
+    public Task Hello(WebsocketConnection ws)
     {
         Console.WriteLine("PayloadHandler.Hello");
-        return Handle(ws, PayloadHello.Payload);
+        return Handle(ws.ws, PayloadHello.Payload);
     }
 }

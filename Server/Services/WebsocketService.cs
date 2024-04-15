@@ -1,7 +1,5 @@
 using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using Domain.Entities.Payloads;
+using Server.Entities.Websocket.Connections;
 using Server.Handlers.Websockets.Receive.Interfaces;
 using Server.Handlers.Websockets.Send.Interfaces;
 using Server.Services.Interfaces;
@@ -12,48 +10,46 @@ class WebsocketService
 {
     private readonly IPayloadSendHandler _payloadSendHandler;
     private readonly IPayloadReceiveHandler _payloadReceiveHandler;
+    private readonly IDispatchHandler _dispatchHandler;
+    private readonly IAuthenticatorService _authenticator;
 
     public WebsocketService(
         IPayloadSendHandler payloadSendHandler,
-        IPayloadReceiveHandler payloadReceiveHandler)
+        IPayloadReceiveHandler payloadReceiveHandler,
+        IDispatchHandler dispatchHandler,
+        IAuthenticatorService authenticator)
     {
         _payloadSendHandler = payloadSendHandler;
         _payloadReceiveHandler = payloadReceiveHandler;
+        _dispatchHandler = dispatchHandler;
+        _authenticator = authenticator;
     }
 
     public async Task OpenWebsocket(WebSocket ws)
     {
         var buffer = new byte[1024];
+        WebsocketConnection connection =
+            new WebsocketConnection(
+                _payloadSendHandler,
+                _dispatchHandler,
+                _authenticator,
+                ws);
+
         while (ws.State == WebSocketState.Open)
         {
-            // send hello
-            // wait for identify
-            // and the heartbeat, wait heartbeat on thread
-
-
+            await _payloadSendHandler.Hello(connection);
 
             var payload = await GetPayload(ws, buffer);
+            // TODO: payload error or disconnect?
             if (payload == null)
+            {
+                connection.Disconnect();
                 break;
+            }
 
-            /* Console.WriteLine(Encoding.UTF8.GetString(buffer)); */
-            /* /1* await webSocket.SendAsync( *1/ */
-            /* /1*     Encoding.UTF8.GetBytes($"Hello, World! {DateTime.Now}"), *1/ */
-            /* /1*     WebSocketMessageType.Text, *1/ */
-            /* /1*     true, *1/ */
-            /* /1*     CancellationToken.None); *1/ */
-            /* /1* await Task.Delay(1000); *1/ */
             if (payload.MessageType == WebSocketMessageType.Binary)
             {
-                var bin = Encoding.UTF8.GetString(buffer).TrimEnd('\0');
-                Console.WriteLine(
-                    $"Received message: {bin}");
-
-                var payloadObject = JsonSerializer
-                    .Deserialize<Payload<object>>(bin);
-
-                await _payloadReceiveHandler.Handle(buffer);
-                // await webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("Hello, World!")), WebSocketMessageType.Text, true, CancellationToken.None);
+                var task = _payloadReceiveHandler.Handle(buffer, connection);
             }
             else if (payload.MessageType == WebSocketMessageType.Close)
             {

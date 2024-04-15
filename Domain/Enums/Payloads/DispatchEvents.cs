@@ -6,5 +6,6 @@ public enum DispatchEvents
     MESSAGE_DELETED,
     JOINED,
     LEFTED,
+    READY,
     DISCONNECTED
 }

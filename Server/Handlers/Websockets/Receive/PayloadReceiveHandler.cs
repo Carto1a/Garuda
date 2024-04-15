@@ -1,7 +1,10 @@
 using System.Text;
 using System.Text.Json;
+using Domain.Dtos.Websockets;
 using Domain.Entities.Payloads;
+using Server.Entities.Websocket.Connections;
 using Server.Handlers.Websockets.Receive.Interfaces;
+using Server.Handlers.Websockets.Send.Interfaces;
 
 namespace Server.Handlers.Websockets.Receive;
 public class PayloadReceiveHandler
@@ -9,15 +12,18 @@ public class PayloadReceiveHandler
 {
     private readonly IInvokeHandler _invokeHandler;
     private readonly IDispatchHandler _dispatchHandler;
-    private readonly IList<Func<Payload<object>, Task>> _ops;
+    private readonly IPayloadSendHandler _payloadSendHandler;
+    private readonly IList<Func<Payload<object>, WebsocketConnection, Task>> _ops;
 
     public PayloadReceiveHandler(
+        IPayloadSendHandler payloadSendHandler,
         IInvokeHandler invokeHandler,
         IDispatchHandler dispatchHandler)
     {
         _invokeHandler = invokeHandler;
         _dispatchHandler = dispatchHandler;
-        _ops = new List<Func<Payload<object>, Task>>
+        _payloadSendHandler = payloadSendHandler;
+        _ops = new List<Func<Payload<object>, WebsocketConnection, Task>>
         {
             Invoke,
             Identify,
@@ -26,7 +32,7 @@ public class PayloadReceiveHandler
         };
     }
 
-    public Task Handle(byte[] payload)
+    public Task Handle(byte[] payload, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Handle");
         var payloadString = Encoding.UTF8.GetString(payload).TrimEnd('\0');
@@ -44,29 +50,34 @@ public class PayloadReceiveHandler
         if (handler == null)
             throw new ArgumentNullException();
 
-        return handler(payloadObject);
+        return handler(payloadObject, ws);
     }
 
-    public Task Invoke(Payload<object> payload)
+    public Task Invoke(Payload<object> payload, WebsocketConnection ws)
     {
         return _invokeHandler.Handle(payload);
     }
 
-    public Task Disconnect(Payload<object> payload)
+    public Task Disconnect(Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Disconnect");
-        return Task.CompletedTask;
+        return _payloadSendHandler.Disconnect(ws);
     }
 
-    public Task Heartbeat(Payload<object> payload)
+    public Task Heartbeat(Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Heartbeat");
-        return Task.CompletedTask;
+        return _payloadSendHandler.HeartbeatAck(ws);
     }
 
-    public Task Identify(Payload<object> payload)
+    public Task Identify(Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Identify");
+        var request = JsonSerializer.Deserialize<IdentifyPayload>(
+            JsonSerializer.Serialize(payload.d));
+        UserSimpleAuthenticateDto user = new(
+            request.Email, request.Password, request.Username);
+        ws.Indentify(user);
         return Task.CompletedTask;
     }
 }
