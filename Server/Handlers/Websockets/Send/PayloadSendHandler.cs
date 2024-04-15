@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using Domain.Entities.Payloads;
+using Domain.Entities.Payloads.Dispatch;
 using Server.Entities.Websocket.Connections;
 using Server.Entities.Websocket.Payloads;
 using Server.Handlers.Websockets.Receive.Interfaces;
@@ -9,17 +10,12 @@ namespace Server.Handlers.Websockets.Send;
 public class PayloadSendHandler
 : IPayloadSendHandler
 {
-    private readonly IDispatchHandler _dispatchHandler;
-
-    public PayloadSendHandler(
-        IDispatchHandler dispatchHandler)
-    {
-        _dispatchHandler = dispatchHandler;
-    }
+    public PayloadSendHandler()
+    { }
 
     public Task Handle(WebSocket ws, ArraySegment<byte> payload)
     {
-        Console.WriteLine("PayloadHandler.Handle");
+        Console.WriteLine("PayloadSendHandler.Handle");
         return ws.SendAsync(
             payload,
             WebSocketMessageType.Binary,
@@ -27,39 +23,45 @@ public class PayloadSendHandler
             CancellationToken.None);
     }
 
-    public Task Dispatch(Payload<object> payload)
+    public Task Dispatch(
+        Dispatch<object> data, WebsocketConnection ws)
     {
-        var data = payload.d?.ToString();
-        if (data == null)
-            throw new ArgumentNullException();
-
-        return _dispatchHandler.Handle(data);
+        Console.WriteLine("PayloadSendHandler.Dispatch");
+        var payload = data.Serialize();
+        return Handle(ws.ws, payload);
     }
 
-    public Task Disconnect(WebsocketConnection ws)
+    public Task Disconnect(
+        Dispatch<Disconnected> data, WebsocketConnection ws)
     {
-        Console.WriteLine("PayloadHandler.Disconnect");
-        // TODO: broadcast disconnect
-        // TODO: clear connection
-        return Task.CompletedTask;
+        Console.WriteLine("PayloadSendHandler.Disconnect");
+        var payload = data.Serialize();
+        return Handle(ws.ws, payload);
     }
 
     public Task Heartbeat(WebsocketConnection ws)
     {
-        Console.WriteLine("PayloadHandler.Heartbeat");
+        Console.WriteLine("PayloadSendHandler.Heartbeat");
         ws.StartDisconnectTimer();
         return Handle(ws.ws, PayloadHeartbeat.Payload);
     }
 
     public Task HeartbeatAck(WebsocketConnection ws)
     {
-        Console.WriteLine("PayloadHandler.HeartbeatAck");
+        Console.WriteLine("PayloadSendHandler.HeartbeatAck");
         return Handle(ws.ws, PayloadHeartbeatAck.Payload);
     }
 
     public Task Hello(WebsocketConnection ws)
     {
-        Console.WriteLine("PayloadHandler.Hello");
+        Console.WriteLine("PayloadSendHandler.Hello");
         return Handle(ws.ws, PayloadHello.Payload);
+    }
+
+    public Task InvalidSession(
+        Payload<InvalidSessionPayload> data, WebsocketConnection ws)
+    {
+        Console.WriteLine("PayloadSendHandler.InvalidSession");
+        return Handle(ws.ws, data.Serialize());
     }
 }

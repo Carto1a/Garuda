@@ -6,5 +6,4 @@ public enum InvokeEvents
     MESSAGE_DELETE,
     JOIN,
     LEAVE,
-    DISCONNECT
 }

@@ -1,5 +1,8 @@
 using System.Net.WebSockets;
 using Domain.Dtos.Websockets;
+using Domain.Entities.Payloads;
+using Domain.Entities.Servers.Users.Informations;
+using Server.Entities.Servers;
 using Server.Handlers.Websockets.Receive.Interfaces;
 using Server.Handlers.Websockets.Send.Interfaces;
 using Server.Services.Interfaces;
@@ -10,11 +13,19 @@ public class WebsocketConnection
     private readonly IPayloadSendHandler _payloadSendHandler;
     private readonly IDispatchHandler _dispatchHandler;
     private readonly IAuthenticatorService _authenticator;
+    private readonly ServerEntity _server;
     public WebSocket ws { get; set; }
+    public Guid Id { get; set; }
+    public UserSimpleInfo? User { get; set; }
+    public bool IsIdentified { get; set; }
     private Timer heartbeatTimer { get; set; }
     private Timer? disconnectTimer { get; set; }
     private Timer? indentifyTimer { get; set; }
+    private bool _destroyed = false;
+    public bool Destroyed => _destroyed;
+    public byte[] buffer { get; set; }
 
+    // TODO: verificar se o estado do websocket
     public WebsocketConnection(
         IPayloadSendHandler payloadSendHandler,
         IDispatchHandler dispatchHandler,
@@ -24,30 +35,46 @@ public class WebsocketConnection
         _payloadSendHandler = payloadSendHandler;
         _dispatchHandler = dispatchHandler;
         _authenticator = authenticator;
+        _server = ServerEntity.Instance;
+        buffer = new byte[1024 * 4];
+        IsIdentified = false;
         this.ws = ws;
+        // TODO: olhar timer
         this.heartbeatTimer = new Timer(_ =>
         {
+            Console.WriteLine("Heartbeat Timeout");
             _payloadSendHandler.Heartbeat(this);
         },
-        null, 0, 42000);
+        null, 42000, 42000);
         this.indentifyTimer = new Timer(_ =>
         {
-            _payloadSendHandler.Disconnect(this);
-        }, null, 0, 1000);
+            var payload = InvalidSessionCodes.AuthenticationFailed;
+            Console.WriteLine("Indentify Timeout");
+            _payloadSendHandler.InvalidSession(payload, this)
+                .ContinueWith(_ => Disconnect());
+        }, null, 1500, Timeout.Infinite);
+    }
+
+    ~WebsocketConnection()
+    {
+        Console.WriteLine("WebsocketConnection Destructor");
     }
 
     public void RestartHeartbeat()
     {
         heartbeatTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-        heartbeatTimer?.Change(0, 42000);
+        heartbeatTimer?.Change(42000, 42000);
     }
 
     public void StartDisconnectTimer()
     {
         disconnectTimer = new Timer(_ =>
         {
-            _payloadSendHandler.Disconnect(this);
-        }, null, 0, 500);
+            var payload = InvalidSessionCodes.SessionTimeout;
+            Console.WriteLine("Disconnect Timeout");
+            _payloadSendHandler.InvalidSession(payload, this)
+                .ContinueWith(_ => Disconnect());
+        }, null, 1000, Timeout.Infinite);
     }
 
     public void StopDisconnectTimer()
@@ -67,23 +94,52 @@ public class WebsocketConnection
         if (_authenticator.Authenticate(request))
         {
             StopIndentifyTimer();
+            var user = _server.Users?.FirstOrDefault(u =>
+                u.Value.Username == request.Username).Value;
+            // TODO: isso esta feio
+            if (user == null)
+            {
+                var id = Guid.NewGuid();
+                user = new UserSimpleInfo(id, request.Username);
+                User = user;
+                _server.AddUser(user);
+            }
+            else
+            {
+                User = new UserSimpleInfo(user.ServerUserId, user.Username);
+            }
+            IsIdentified = true;
+
             _dispatchHandler.ReadyMethod(string.Empty, this);
             return;
         }
 
-        // TODO: Invalid session
-        _payloadSendHandler.Disconnect(this);
+        var payload = InvalidSessionCodes.AuthenticationFailed;
+        Console.WriteLine("Indentify Failed");
+        _payloadSendHandler.InvalidSession(payload, this)
+            .ContinueWith(_ => Disconnect());
     }
 
-    public async void Disconnect()
+    public Task Disconnect()
     {
-        await _payloadSendHandler.Disconnect(this);
-        await ws.CloseAsync(
+        Console.WriteLine("Disconnecting");
+        // NOTE: Zombie connection, meeedo
+        _destroyed = true;
+        if (IsIdentified)
+            _dispatchHandler.DisconnectedMethod(this);
+
+        ws.Abort();
+        return ws.CloseOutputAsync(
             WebSocketCloseStatus.NormalClosure,
             "Disconnect",
-            CancellationToken.None);
-        heartbeatTimer.Dispose();
-        disconnectTimer?.Dispose();
-        ws.Dispose();
+            CancellationToken.None).ContinueWith(_ =>
+            {
+                _server.Remove(this);
+                heartbeatTimer?.Dispose();
+                disconnectTimer?.Dispose();
+                indentifyTimer?.Dispose();
+                ws.Dispose();
+                Console.WriteLine("Disconnected");
+            });
     }
 }

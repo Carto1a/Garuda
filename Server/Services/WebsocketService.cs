@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using Domain.Entities.Payloads;
 using Server.Entities.Websocket.Connections;
 using Server.Handlers.Websockets.Receive.Interfaces;
 using Server.Handlers.Websockets.Send.Interfaces;
@@ -27,7 +28,6 @@ class WebsocketService
 
     public async Task OpenWebsocket(WebSocket ws)
     {
-        var buffer = new byte[1024];
         WebsocketConnection connection =
             new WebsocketConnection(
                 _payloadSendHandler,
@@ -35,21 +35,36 @@ class WebsocketService
                 _authenticator,
                 ws);
 
+        await _payloadSendHandler.Hello(connection);
+
         while (ws.State == WebSocketState.Open)
         {
-            await _payloadSendHandler.Hello(connection);
 
-            var payload = await GetPayload(ws, buffer);
-            // TODO: payload error or disconnect?
+            var payload = await GetPayload(ws, connection.buffer);
             if (payload == null)
             {
-                connection.Disconnect();
+                if(ws.State == WebSocketState.Aborted)
+                {
+                    Console.WriteLine("Connection aborted");
+                    if (!connection.Destroyed)
+                        await connection.Disconnect();
+                    break;
+                }
+                var payloadInvalid = InvalidSessionCodes
+                    .InvalidPayload;
+                Console.WriteLine("Payload is null");
+                await _payloadSendHandler.InvalidSession(
+                    payloadInvalid,
+                    connection);
+                await connection.Disconnect();
+                connection = null;
                 break;
             }
 
             if (payload.MessageType == WebSocketMessageType.Binary)
             {
-                var task = _payloadReceiveHandler.Handle(buffer, connection);
+                var task = _payloadReceiveHandler.Handle(
+                    connection.buffer, connection, payload);
             }
             else if (payload.MessageType == WebSocketMessageType.Close)
             {
@@ -68,7 +83,6 @@ class WebsocketService
     {
         try
         {
-            /* var buffer = new byte[1024]; */
             var payload = await ws
                 .ReceiveAsync(
                         new ArraySegment<byte>(buffer),

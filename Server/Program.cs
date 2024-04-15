@@ -7,6 +7,8 @@ using Server.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// TODO: error handling
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

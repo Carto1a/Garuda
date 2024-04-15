@@ -22,11 +22,15 @@ public class DispatchHandler
         return Task.CompletedTask;
     }
 
-    public Task DisconnectedMethod(string data, WebsocketConnection ws)
+    public Task DisconnectedMethod(WebsocketConnection ws)
     {
         Console.WriteLine("DispatchHandler.Disconnected");
-        var disconnected = Disconnected.Create(Guid.NewGuid(), DateTime.Now);
-        return _payloadSendHandler.Handle(ws.ws, JsonSerializer.SerializeToUtf8Bytes(disconnected));
+        if (ws.User == null) return Task.CompletedTask;
+
+        var disconnected = Disconnected.Create(ws.User, DateTime.Now);
+        var RoomId = ws.User.AtualRoomId;
+        if (RoomId == null) return Task.CompletedTask;
+        return BroadcastToRoom(disconnected, ws, (Guid)RoomId);
     }
 
     public Task JoinedMethod(string data, WebsocketConnection ws)
@@ -64,5 +68,39 @@ public class DispatchHandler
         Console.WriteLine("DispatchHandler.Ready");
         var ready = Ready.Create();
         return _payloadSendHandler.Handle(ws.ws, JsonSerializer.SerializeToUtf8Bytes(ready));
+    }
+
+    public Task BroadcastToRoom(
+        Dispatch<Disconnected> data,
+        WebsocketConnection ws,
+        Guid roomId)
+    {
+        Console.WriteLine("DispatchHandler.BroadcastToRoom");
+        return Task.CompletedTask;
+    }
+
+    public Task BroadcastToUser(
+        Dispatch<Disconnected> data,
+        WebsocketConnection ws,
+        Guid userId)
+    {
+        Console.WriteLine("DispatchHandler.BroadcastToUser");
+        return Task.CompletedTask;
+    }
+
+    public Task BroadcastToServer(
+        Dispatch<Disconnected> data, WebsocketConnection ws)
+    {
+        Console.WriteLine("DispatchHandler.BroadcastToServer");
+        return Task.CompletedTask;
+    }
+
+    public Task BroadcastToRooms(
+        Dispatch<Disconnected> data,
+        WebsocketConnection ws,
+        List<Guid> roomIds)
+    {
+        Console.WriteLine("DispatchHandler.BroadcastToRooms");
+        return Task.CompletedTask;
     }
 }

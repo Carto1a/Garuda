@@ -6,9 +6,8 @@ namespace Server.Entities.Websocket.Payloads;
 public static class PayloadHeartbeatAck
 {
     public static ArraySegment<byte> Payload = new ArraySegment<byte>(
-        JsonSerializer.SerializeToUtf8Bytes(
-            new Payload<object>(
-                OpCodes.HeartbeatAck,
-                null,
-                null)));
+        new Payload<object>(
+            OpCodes.HeartbeatAck,
+            null,
+            null).Serialize());
 }

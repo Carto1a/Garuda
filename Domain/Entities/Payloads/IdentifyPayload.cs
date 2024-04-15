@@ -1,4 +1,3 @@
-
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads;

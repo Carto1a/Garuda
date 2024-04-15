@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads;
@@ -14,5 +15,10 @@ public class Payload<Type>
         this.op = op;
         this.d = d;
         this.t = t;
+    }
+
+    public byte[] Serialize()
+    {
+        return JsonSerializer.SerializeToUtf8Bytes(this);
     }
 }
