@@ -15,7 +15,7 @@ await ws.ConnectAsync(new Uri("ws://localhost:5281/ws"), CancellationToken.None)
 var buffer = new byte[1024];
 
 var indentifyPayload = IdentifyPayload
-    .Create(username, "email", "password");
+    .Create(username, "email", "password", true);
 
 var heartbeatPayload = new Payload<object>(
     OpCodes.Heartbeat,

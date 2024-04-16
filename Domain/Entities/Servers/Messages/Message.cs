@@ -1,4 +1,4 @@
-namespace Domain.Entities.Servers;
+namespace Domain.Entities.Servers.Messages;
 public class Message
 {
     public Guid Id { get; set; }
@@ -11,9 +11,9 @@ public class Message
     public bool IsUpdated { get; set; }
 
     public Message(
+        Guid messageId,
         Guid roomId,
         Guid userId,
-        Guid messageId,
         string content)
     {
         Id = messageId;

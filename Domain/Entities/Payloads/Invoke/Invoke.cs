@@ -6,7 +6,7 @@ public class Invoke<Event>
 {
     public Invoke(string event_name, Event @event)
     : base(OpCodes.Dispatch, @event, event_name)
-    { 
-        
+    {
+
     }
 }

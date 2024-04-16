@@ -28,10 +28,10 @@ public class DispatchHandler
         Console.WriteLine("DispatchHandler.Disconnected");
         if (ws.User == null) return Task.CompletedTask;
 
-        var disconnected = Disconnected.Create(ws.User, DateTime.Now);
+        var disconnected = DisconnectedData.Create(ws.User, DateTime.Now);
         var Room = ws.AtualRoom;
         if (Room == null) return Task.CompletedTask;
-        return BroadcastToRoom<Disconnected>(disconnected, Room);
+        return BroadcastToRoom<DisconnectedData>(disconnected, Room);
     }
 
     public Task JoinedMethod(string data, WebsocketConnection ws)
@@ -67,7 +67,7 @@ public class DispatchHandler
     public Task ReadyMethod(string data, WebsocketConnection ws)
     {
         Console.WriteLine("DispatchHandler.Ready");
-        var ready = Ready.Create();
+        var ready = ReadyData.Create();
         return _payloadSendHandler.Handle(ws.ws, ready.Serialize());
     }
 
@@ -114,7 +114,7 @@ public class DispatchHandler
     {
         Console.WriteLine("DispatchHandler.RoomList");
         var rooms = ServerEntity.Instance.ListRooms();
-        var payload = RoomList.Create(rooms.Result);
+        var payload = RoomListData.Create(rooms.Result);
         return _payloadSendHandler.Handle(ws.ws, payload.Serialize());
     }
 }

@@ -1,4 +1,4 @@
-namespace Domain.Entities.Servers.Message;
+namespace Domain.Entities.Servers.Messages;
 public class LeaveMessage
 {
     public LeaveMessage(

@@ -1,7 +1,7 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class MessageCreated
+public class MessageCreatedData
 {
     public Guid id { get; set; }
     public string username { get; set; }
@@ -9,29 +9,28 @@ public class MessageCreated
     public Guid room_id { get; set; }
     public DateTime created_at { get; set; }
 
-    public MessageCreated(
+    public MessageCreatedData(
         Guid id,
         string username,
         string content,
-        Guid roomId,
-        DateTime createdAt)
+        Guid roomId)
     {
         this.id = id;
         this.username = username;
         this.content = content;
         this.room_id = roomId;
-        this.created_at = createdAt;
+        this.created_at = DateTime.Now;
     }
 
-    public static Dispatch<MessageCreated> Create(
+    public static Dispatch<MessageCreatedData> Create(
         Guid id,
         string username,
         string content,
         Guid roomId,
         DateTime createdAt)
     {
-        return new Dispatch<MessageCreated>(
+        return new Dispatch<MessageCreatedData>(
             nameof(DispatchEvents.MESSAGE_CREATED),
-            new MessageCreated(id, username, content, roomId, createdAt));
+            new MessageCreatedData(id, username, content, roomId));
     }
 }

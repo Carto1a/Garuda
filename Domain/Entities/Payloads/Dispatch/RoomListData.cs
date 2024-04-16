@@ -2,23 +2,23 @@ using Domain.Entities.Servers;
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class RoomList
+public class RoomListData
 {
     public IList<Room> rooms { get; set; }
     public int count => rooms.Count;
 
-    public RoomList(
+    public RoomListData(
         IList<Room> rooms)
     {
         this.rooms = rooms;
     }
 
-    public static Dispatch<RoomList> Create(
+    public static Dispatch<RoomListData> Create(
         IList<Room> rooms)
     {
-        return new Dispatch<RoomList>(
+        return new Dispatch<RoomListData>(
             nameof(DispatchEvents.ROOMS_LIST),
-            new RoomList(rooms)
+            new RoomListData(rooms)
         );
     }
 }

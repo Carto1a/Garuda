@@ -12,5 +12,5 @@ public interface IPayloadSendHandler
     Task Hello(WebsocketConnection ws);
     Task HeartbeatAck(WebsocketConnection ws);
     Task InvalidSession(Payload<InvalidSessionPayload> data, WebsocketConnection ws);
-    Task Disconnect(Dispatch<Disconnected> data, WebsocketConnection ws);
+    Task Disconnect(Dispatch<DisconnectedData> data, WebsocketConnection ws);
 }

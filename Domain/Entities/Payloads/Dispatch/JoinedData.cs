@@ -1,13 +1,13 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class Joined
+public class JoinedData
 {
     public Guid room_id { get; set; }
     public string username { get; set; }
     public DateTime joined_at { get; set; }
 
-    public Joined(
+    public JoinedData(
         Guid roomId,
         string username,
         DateTime joinedAt)
@@ -17,12 +17,12 @@ public class Joined
         this.joined_at = joinedAt;
     }
 
-    public static Dispatch<Joined> Create(
+    public static Dispatch<JoinedData> Create(
         Guid roomId,
         string username)
     {
-        return new Dispatch<Joined>(
+        return new Dispatch<JoinedData>(
             nameof(DispatchEvents.JOINED),
-            new Joined(roomId, username, DateTime.Now));
+            new JoinedData(roomId, username, DateTime.Now));
     }
 }

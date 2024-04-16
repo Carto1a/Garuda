@@ -55,11 +55,19 @@ public class InvokeHandler
         Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("InvokeHandler.Join");
-        var data = Deserialize<Join>(payload);
+        var data = Deserialize<JoinData>(payload);
         if (data == null)
             throw new ArgumentNullException();
 
-        var room = (RoomEntity)ServerEntity.Instance.Rooms[data.room_id];
+        var roomId = data.room_id;
+        if (roomId == null)
+            throw new ArgumentNullException();
+
+        var RoomCollection = ServerEntity.Instance.Rooms;
+        if (RoomCollection == null)
+            throw new ArgumentNullException();
+
+        var room = (RoomEntity)RoomCollection[roomId];
         if (room == null)
             throw new ArgumentNullException();
 
@@ -68,32 +76,74 @@ public class InvokeHandler
         ws.AtualRoom = room;
 
         var joined =
-            Joined.Create(room.Id, ws.User.Username);
-        return _dispatchHandler.BroadcastToRoom<Joined>(joined, room);
+            JoinedData.Create(room.Id, ws.User.Username);
+        return _dispatchHandler.BroadcastToRoom<JoinedData>(joined, room);
     }
 
     public Task Leave(
         Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("InvokeHandler.Leave");
-        var data = Deserialize<Leave>(payload);
+        var data = Deserialize<LeaveData>(payload);
         if (data == null)
             throw new ArgumentNullException();
-        var room = (RoomEntity)ServerEntity.Instance.Rooms[data.room_id];
+
+        var roomId = data.room_id;
+        if (roomId == null)
+            throw new ArgumentNullException();
+
+        var roomCollection = ServerEntity.Instance.Rooms;
+        if (roomCollection == null)
+            throw new ArgumentNullException();
+
+        var room = (RoomEntity)roomCollection[roomId];
         if (room == null)
             throw new ArgumentNullException();
 
         room.Leave(ws);
         ws.AtualRoom = null;
-        var lefted = Lefted.Create(ws.User.Username, room.Id);
-        return _dispatchHandler.BroadcastToRoom<Lefted>(lefted, room);
+        var lefted = LeftedData.Create(ws.User.Username, room.Id);
+        return _dispatchHandler.BroadcastToRoom<LeftedData>(lefted, room);
     }
 
     public Task MessageCreate(
         Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("InvokeHandler.MessageCreate");
-        return Task.CompletedTask;
+        var data = Deserialize<MessageCreateData>(payload);
+        if (data == null)
+            throw new ArgumentNullException();
+
+        var roomId = data.room_id;
+        if (roomId == null)
+            throw new ArgumentNullException();
+
+        var RoomCollection = ServerEntity.Instance.Rooms;
+        if (RoomCollection == null)
+            throw new ArgumentNullException();
+
+        var room = (RoomEntity)RoomCollection[(Guid)roomId];
+        if (room == null)
+            throw new ArgumentNullException();
+
+        var message = MessageEntity.Create(
+            room.Id,
+            ws.User.ServerUserId,
+            data.content
+        );
+
+        room.Message(message);
+
+        var payloadMessage = MessageCreatedData.Create(
+            message.Id,
+            ws.User.Username,
+            message.Content,
+            message.RoomId,
+            message.CreatedAt
+        );
+
+        return _dispatchHandler
+            .BroadcastToRoom<MessageCreatedData>(payloadMessage, room);
     }
 
     public Task MessageDelete(

@@ -1,13 +1,13 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class Lefted
+public class LeftedData
 {
     public Guid room_id { get; set; }
     public string username { get; set; }
     public DateTime left_at { get; set; }
 
-    public Lefted(
+    public LeftedData(
         string username,
         Guid roomId,
         DateTime leftAt)
@@ -17,12 +17,12 @@ public class Lefted
         this.room_id = roomId;
     }
 
-    public static Dispatch<Lefted> Create(
+    public static Dispatch<LeftedData> Create(
         string username,
         Guid roomId)
     {
-        return new Dispatch<Lefted>(
+        return new Dispatch<LeftedData>(
             nameof(DispatchEvents.LEFTED),
-            new Lefted(username, roomId, DateTime.Now));
+            new LeftedData(username, roomId, DateTime.Now));
     }
 }

@@ -1,21 +1,21 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Invoke;
-public class MessageDelete
+public class MessageDeleteData
 {
     public Guid message_id { get; set; }
 
-    public MessageDelete(
+    public MessageDeleteData(
         Guid messageId)
     {
         this.message_id = messageId;
     }
 
-    public static Invoke<MessageDelete> Create(
+    public static Invoke<MessageDeleteData> Create(
         Guid messageId)
     {
-        return new Invoke<MessageDelete>(
+        return new Invoke<MessageDeleteData>(
             nameof(InvokeEvents.MESSAGE_DELETE),
-            new MessageDelete(messageId));
+            new MessageDeleteData(messageId));
     }
 }

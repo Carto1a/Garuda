@@ -1,12 +1,12 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Invoke;
-public class MessageUpdate
+public class MessageUpdateData
 {
     public Guid message_id { get; set; }
     public string? content { get; set; }
 
-    public MessageUpdate(
+    public MessageUpdateData(
         Guid messageId,
         string content)
     {
@@ -14,12 +14,12 @@ public class MessageUpdate
         this.content = content;
     }
 
-    public static Invoke<MessageUpdate> Create(
+    public static Invoke<MessageUpdateData> Create(
         Guid messageId,
         string content)
     {
-        return new Invoke<MessageUpdate>(
+        return new Invoke<MessageUpdateData>(
             nameof(InvokeEvents.MESSAGE_UPDATE),
-            new MessageUpdate(messageId, content));
+            new MessageUpdateData(messageId, content));
     }
 }

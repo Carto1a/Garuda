@@ -1,3 +1,5 @@
+using Domain.Entities.Servers.Messages;
+
 namespace Domain.Entities.Servers;
 public class Reply
 : Message

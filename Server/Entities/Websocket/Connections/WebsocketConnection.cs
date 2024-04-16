@@ -25,6 +25,7 @@ public class WebsocketConnection
     public bool Destroyed => _destroyed;
     public byte[] buffer { get; set; }
     public RoomEntity? AtualRoom { get; set; } = null;
+    public bool Anonymous { get; set; } = false;
 
     // TODO: verificar se o estado do websocket
     public WebsocketConnection(
@@ -90,11 +91,20 @@ public class WebsocketConnection
         indentifyTimer = null;
     }
 
-    public void Indentify(UserSimpleAuthenticateDto request)
+    public void Indentify(
+        UserSimpleAuthenticateDto? request, bool anonymous = false)
     {
-        if (_authenticator.Authenticate(request))
+        StopIndentifyTimer();
+
+        if (anonymous)
         {
-            StopIndentifyTimer();
+            var user = _server.Users[Guid.Empty];
+            SetUser(user);
+            return;
+        }
+
+        if (request != null && _authenticator.Authenticate(request))
+        {
             var user = _server.Users?.FirstOrDefault(u =>
                 u.Value.Username == request.Username).Value;
             // TODO: isso esta feio
@@ -102,16 +112,13 @@ public class WebsocketConnection
             {
                 var id = Guid.NewGuid();
                 user = new UserSimpleInfo(id, request.Username);
-                User = user;
                 _server.AddUser(user);
             }
             else
             {
-                User = new UserSimpleInfo(user.ServerUserId, user.Username);
+                user = new UserSimpleInfo(user.ServerUserId, user.Username);
             }
-            IsIdentified = true;
-
-            _dispatchHandler.ReadyMethod(string.Empty, this);
+            SetUser(user);
             return;
         }
 
@@ -119,6 +126,14 @@ public class WebsocketConnection
         Console.WriteLine("Indentify Failed");
         _payloadSendHandler.InvalidSession(payload, this)
             .ContinueWith(_ => Disconnect());
+    }
+
+    public Task SetUser(UserSimpleInfo user)
+    {
+        User = user;
+        IsIdentified = true;
+        _dispatchHandler.ReadyMethod(string.Empty, this);
+        return Task.CompletedTask;
     }
 
     public Task Disconnect()

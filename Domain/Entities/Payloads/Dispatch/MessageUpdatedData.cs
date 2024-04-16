@@ -1,13 +1,13 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class MessageUpdated
+public class MessageUpdatedData
 {
     public Guid? message_id { get; set; }
     public string? content { get; set; }
     public DateTime updated_at { get; set; }
 
-    public MessageUpdated(
+    public MessageUpdatedData(
         Guid messageId,
         string content,
         DateTime updatedAt)
@@ -17,13 +17,13 @@ public class MessageUpdated
         this.updated_at = updatedAt;
     }
 
-    public static Dispatch<MessageUpdated> Create(
+    public static Dispatch<MessageUpdatedData> Create(
         Guid messageId,
         string content,
         DateTime updatedAt)
     {
-        return new Dispatch<MessageUpdated>(
+        return new Dispatch<MessageUpdatedData>(
             nameof(DispatchEvents.MESSAGE_UPDATED),
-            new MessageUpdated(messageId, content, updatedAt));
+            new MessageUpdatedData(messageId, content, updatedAt));
     }
 }

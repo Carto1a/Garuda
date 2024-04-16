@@ -2,12 +2,12 @@ using Domain.Entities.Servers.Users.Informations;
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class Disconnected
+public class DisconnectedData
 {
     public UserSimpleInfo user { get; set; }
     public DateTime disconnected_at { get; set; }
 
-    public Disconnected(
+    public DisconnectedData(
         UserSimpleInfo user,
         DateTime disconnectedAt)
     {
@@ -15,12 +15,12 @@ public class Disconnected
         this.disconnected_at = disconnectedAt;
     }
 
-    public static Dispatch<Disconnected> Create(
+    public static Dispatch<DisconnectedData> Create(
         UserSimpleInfo user,
         DateTime disconnectedAt)
     {
-        return new Dispatch<Disconnected>(
+        return new Dispatch<DisconnectedData>(
             nameof(DispatchEvents.DISCONNECTED),
-            new Disconnected(user, disconnectedAt));
+            new DisconnectedData(user, disconnectedAt));
     }
 }

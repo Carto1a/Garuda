@@ -1,14 +1,14 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Dispatch;
-public class MessageDeleted
+public class MessageDeletedData
 {
     public Guid message_id { get; set; }
     public Guid room_id { get; set; }
     public Guid deleted_by { get; set; }
     public DateTime deleted_at { get; set; }
 
-    public MessageDeleted(
+    public MessageDeletedData(
         Guid messageId,
         Guid roomId,
         Guid deletedBy,
@@ -20,14 +20,14 @@ public class MessageDeleted
         this.deleted_at = deletedAt;
     }
 
-    public static Dispatch<MessageDeleted> Create(
+    public static Dispatch<MessageDeletedData> Create(
         Guid messageId,
         Guid roomId,
         Guid deletedBy,
         DateTime deletedAt)
     {
-        return new Dispatch<MessageDeleted>(
+        return new Dispatch<MessageDeletedData>(
             nameof(DispatchEvents.MESSAGE_DELETED),
-            new MessageDeleted(messageId, roomId, deletedBy, deletedAt));
+            new MessageDeletedData(messageId, roomId, deletedBy, deletedAt));
     }
 }

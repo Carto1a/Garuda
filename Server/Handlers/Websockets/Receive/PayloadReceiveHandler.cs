@@ -88,18 +88,30 @@ public class PayloadReceiveHandler
         Payload<object> payload, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Identify");
-        var request = JsonSerializer.Deserialize<IdentifyPayload>(
-            JsonSerializer.Serialize(payload.d));
+        // TODO: Enviar errro
+        if (ws.IsIdentified)
+            throw new InvalidOperationException();
+
+        var data = payload.d?.ToString();
+        if (data == null)
+            throw new ArgumentNullException();
+
+        var request = JsonSerializer.Deserialize<IdentifyPayload>(data);
         if (request == null)
             throw new ArgumentNullException();
 
-        var user = new UserSimpleAuthenticateDto
+        UserSimpleAuthenticateDto? user = null;
+        if (!request.Anonymous)
         {
-            Username = request.Username,
-            Password = request.Password,
-            Email = request.Email
-        };
-        ws.Indentify(user);
+            user = new UserSimpleAuthenticateDto
+            {
+                Username = request.Username,
+                Password = request.Password,
+                Email = request.Email
+            };
+        }
+
+        ws.Indentify(user, request.Anonymous);
         return Task.CompletedTask;
     }
 }

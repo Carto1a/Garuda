@@ -1,3 +1,4 @@
+using Domain.Entities.Servers.Messages;
 using Domain.Entities.Servers.Users.Informations;
 
 namespace Domain.Entities.Servers;

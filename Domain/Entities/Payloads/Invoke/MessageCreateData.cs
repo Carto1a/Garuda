@@ -1,12 +1,12 @@
 using Domain.Enums.Payloads;
 
 namespace Domain.Entities.Payloads.Invoke;
-public class MessageCreate
+public class MessageCreateData
 {
     public Guid? room_id { get; set; }
     public string? content { get; set; }
 
-    public MessageCreate(
+    public MessageCreateData(
         string content,
         Guid room_id)
     {
@@ -14,12 +14,12 @@ public class MessageCreate
         this.room_id = room_id;
     }
 
-    public static Invoke<MessageCreate> Create(
+    public static Invoke<MessageCreateData> Create(
         string content,
         Guid roomId)
     {
-        return new Invoke<MessageCreate>(
+        return new Invoke<MessageCreateData>(
             nameof(InvokeEvents.MESSAGE_CREATE),
-            new MessageCreate(content, roomId));
+            new MessageCreateData(content, roomId));
     }
 }

@@ -21,6 +21,7 @@ public class ServerEntity
         Rooms = new Dictionary<Guid, Room>();
         var id = Guid.NewGuid();
         Rooms.Add(id, new Room(id, "main", "server test room"));
+        Users.Add(Guid.Empty, new UserSimpleInfo(Guid.Empty, "Anonymous"));
     }
 
     public Task Add(WebsocketConnection ws)

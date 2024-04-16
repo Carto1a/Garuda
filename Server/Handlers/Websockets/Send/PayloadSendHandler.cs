@@ -32,7 +32,7 @@ public class PayloadSendHandler
     }
 
     public Task Disconnect(
-        Dispatch<Disconnected> data, WebsocketConnection ws)
+        Dispatch<DisconnectedData> data, WebsocketConnection ws)
     {
         Console.WriteLine("PayloadSendHandler.Disconnect");
         var payload = data.Serialize();
