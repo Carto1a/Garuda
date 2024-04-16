@@ -19,11 +19,10 @@ public class Lefted
 
     public static Dispatch<Lefted> Create(
         string username,
-        Guid roomId,
-        DateTime leftAt)
+        Guid roomId)
     {
         return new Dispatch<Lefted>(
             nameof(DispatchEvents.LEFTED),
-            new Lefted(username, roomId, leftAt));
+            new Lefted(username, roomId, DateTime.Now));
     }
 }

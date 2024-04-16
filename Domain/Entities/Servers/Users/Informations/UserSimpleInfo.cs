@@ -3,7 +3,6 @@ public class UserSimpleInfo
 {
     public Guid ServerUserId { get; set; }
     public string Username { get; set; }
-    public Guid? AtualRoomId { get; set; }
 
     public UserSimpleInfo(
         Guid id,

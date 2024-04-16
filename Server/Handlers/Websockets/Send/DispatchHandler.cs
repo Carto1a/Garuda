@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Domain.Entities.Payloads.Dispatch;
+using Server.Entities.Servers;
 using Server.Entities.Websocket.Connections;
 using Server.Handlers.Websockets.Receive.Interfaces;
 using Server.Handlers.Websockets.Send.Interfaces;
@@ -28,9 +29,9 @@ public class DispatchHandler
         if (ws.User == null) return Task.CompletedTask;
 
         var disconnected = Disconnected.Create(ws.User, DateTime.Now);
-        var RoomId = ws.User.AtualRoomId;
-        if (RoomId == null) return Task.CompletedTask;
-        return BroadcastToRoom(disconnected, ws, (Guid)RoomId);
+        var Room = ws.AtualRoom;
+        if (Room == null) return Task.CompletedTask;
+        return BroadcastToRoom<Disconnected>(disconnected, Room);
     }
 
     public Task JoinedMethod(string data, WebsocketConnection ws)
@@ -67,20 +68,25 @@ public class DispatchHandler
     {
         Console.WriteLine("DispatchHandler.Ready");
         var ready = Ready.Create();
-        return _payloadSendHandler.Handle(ws.ws, JsonSerializer.SerializeToUtf8Bytes(ready));
+        return _payloadSendHandler.Handle(ws.ws, ready.Serialize());
     }
 
-    public Task BroadcastToRoom(
-        Dispatch<Disconnected> data,
-        WebsocketConnection ws,
-        Guid roomId)
+    public Task BroadcastToRoom<T>(
+        Dispatch<T> data,
+        RoomEntity room)
     {
         Console.WriteLine("DispatchHandler.BroadcastToRoom");
+        var payload = data.Serialize();
+        // TODO: mudar?
+        foreach (var connection in room.Connections.Values)
+        {
+            _payloadSendHandler.Handle(connection.ws, payload);
+        }
         return Task.CompletedTask;
     }
 
-    public Task BroadcastToUser(
-        Dispatch<Disconnected> data,
+    public Task BroadcastToUser<T>(
+        Dispatch<T> data,
         WebsocketConnection ws,
         Guid userId)
     {
@@ -88,19 +94,27 @@ public class DispatchHandler
         return Task.CompletedTask;
     }
 
-    public Task BroadcastToServer(
-        Dispatch<Disconnected> data, WebsocketConnection ws)
+    public Task BroadcastToServer<T>(
+        Dispatch<T> data, WebsocketConnection ws)
     {
         Console.WriteLine("DispatchHandler.BroadcastToServer");
         return Task.CompletedTask;
     }
 
-    public Task BroadcastToRooms(
-        Dispatch<Disconnected> data,
+    public Task BroadcastToRooms<T>(
+        Dispatch<T> data,
         WebsocketConnection ws,
         List<Guid> roomIds)
     {
         Console.WriteLine("DispatchHandler.BroadcastToRooms");
         return Task.CompletedTask;
+    }
+
+    public Task RoomListMethod(string data, WebsocketConnection ws)
+    {
+        Console.WriteLine("DispatchHandler.RoomList");
+        var rooms = ServerEntity.Instance.ListRooms();
+        var payload = RoomList.Create(rooms.Result);
+        return _payloadSendHandler.Handle(ws.ws, payload.Serialize());
     }
 }

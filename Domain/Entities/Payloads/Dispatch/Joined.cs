@@ -19,11 +19,10 @@ public class Joined
 
     public static Dispatch<Joined> Create(
         Guid roomId,
-        string username,
-        DateTime joinedAt)
+        string username)
     {
         return new Dispatch<Joined>(
             nameof(DispatchEvents.JOINED),
-            new Joined(roomId, username, joinedAt));
+            new Joined(roomId, username, DateTime.Now));
     }
 }

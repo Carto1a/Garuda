@@ -66,7 +66,7 @@ public class PayloadReceiveHandler
     public Task Invoke(
         Payload<object> payload, WebsocketConnection ws)
     {
-        return _invokeHandler.Handle(payload);
+        return _invokeHandler.Handle(payload, ws);
     }
 
     public Task Disconnect(

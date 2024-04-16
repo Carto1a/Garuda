@@ -7,5 +7,6 @@ public enum DispatchEvents
     JOINED,
     LEFTED,
     READY,
-    DISCONNECTED
+    DISCONNECTED,
+    ROOMS_LIST,
 }

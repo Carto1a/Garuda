@@ -24,6 +24,7 @@ public class WebsocketConnection
     private bool _destroyed = false;
     public bool Destroyed => _destroyed;
     public byte[] buffer { get; set; }
+    public RoomEntity? AtualRoom { get; set; } = null;
 
     // TODO: verificar se o estado do websocket
     public WebsocketConnection(

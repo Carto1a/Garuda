@@ -19,6 +19,8 @@ public class ServerEntity
     {
         Users = new Dictionary<Guid, UserSimpleInfo>();
         Rooms = new Dictionary<Guid, Room>();
+        var id = Guid.NewGuid();
+        Rooms.Add(id, new Room(id, "main", "server test room"));
     }
 
     public Task Add(WebsocketConnection ws)
@@ -44,6 +46,18 @@ public class ServerEntity
     {
         Users[user.ServerUserId] = user;
         return Task.CompletedTask;
+    }
+
+    public Task<List<Room>> ListRooms()
+    {
+        // TODO: mudar?
+        var rooms = new List<Room>();
+        for(var i = 0; i < Rooms.Count; i++)
+        {
+            var room = Rooms.ElementAt(i);
+            rooms.Add(room.Value);
+        }
+        return Task.FromResult(rooms);
     }
 }
 
