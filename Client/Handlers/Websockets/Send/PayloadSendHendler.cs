@@ -8,10 +8,22 @@ namespace Client.Handlers.Websockets.Send;
 public class PayloadSendHandler
 : IPayloadSendHandler
 {
-    public Task Handle(WebSocket ws, ArraySegment<byte> buffer)
+    public PayloadSendHandler()
+    {
+    }
+
+    public Task Handle(UserConnection ws, ArraySegment<byte> buffer)
     {
         Console.WriteLine("PayloadSendHandler.Handle");
-        return ws.SendAsync(
+        if (ws.ws.State != WebSocketState.Open)
+        {
+            Console.WriteLine(
+                "PayloadSendHandler.Handle: WebSocketState is not Open");
+            ws.Destroyed = true;
+            ws = null;
+            return Task.CompletedTask;
+        }
+        return ws.ws.SendAsync(
             buffer,
             WebSocketMessageType.Binary,
             true,
@@ -22,17 +34,10 @@ public class PayloadSendHandler
     {
         Console.WriteLine("PayloadSendHandler.Dispatch");
         var payload = data.Serialize();
-        return Handle(ws.ws, payload);
+        return Handle(ws, payload);
     }
 
-    public Task Disconnect(
-        Dispatch<DisconnectedData> data, UserConnection ws)
-    {
-        Console.WriteLine("PayloadSendHandler.Disconnect");
-        return Task.CompletedTask;
-    }
-
-    public Task Heartbeat(WebSocket ws)
+    public Task Heartbeat(UserConnection ws)
     {
         Console.WriteLine("PayloadSendHandler.Heartbeat");
         return Handle(ws, PayloadHeartbeat.Payload);
@@ -41,11 +46,13 @@ public class PayloadSendHandler
     public Task Identify(UserConnection ws)
     {
         Console.WriteLine("PayloadSendHandler.Identify");
-        if (ws.IdentifyPayloadUser != null)
-            return Handle(ws.ws, ws.IdentifyPayloadUser.Value);
+        if (ws.IdentifyPayloadUser == null)
+        {
+            Console.WriteLine(
+                    "PayloadSendHandler.Identify: IdentifyPayloadUser is null");
+            return Task.CompletedTask;
+        }
 
-        Console.WriteLine(
-            "PayloadSendHandler.Identify: IdentifyPayloadUser is null");
-        return Task.CompletedTask;
+        return Handle(ws, ws.IdentifyPayloadUser.Value);
     }
 }

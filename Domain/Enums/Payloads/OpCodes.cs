@@ -7,5 +7,4 @@ public enum OpCodes
     Hello,          // receive
     HeartbeatAck,   // receive
     InvalidSession, // receive
-    Disconnect      // send
 }

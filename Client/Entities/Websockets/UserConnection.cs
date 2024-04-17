@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using Client.Handlers.Websockets.Send.Interfaces;
 using Domain.Entities.Payloads;
+using Domain.Entities.Servers.Users.Informations;
 using Domain.Enums.Payloads;
 
 namespace Client.Entities.Websockets;
@@ -12,19 +13,30 @@ public class UserConnection
     public WebSocket ws { get; set; }
     public byte[] Buffer { get; set; }
     public ArraySegment<byte>? IdentifyPayloadUser { get; set; }
+    public UserSimpleInfo? User { get; set; }
     public bool isIdentified { get; set; } = false;
+    public bool Destroyed { get; set; } = false;
     public Timer? HeartbeatTimer { get; set; }
 
-    public UserConnection(Guid userId, WebSocket webSocket)
+    public UserConnection(
+        IPayloadSendHandler sendHandler,
+        Guid userId,
+        WebSocket webSocket,
+        UserSimpleInfo? user)
     {
+        User = user;
+        _sendHandler = sendHandler;
         UserId = userId;
         ws = webSocket;
         Buffer = new byte[1024];
     }
 
-    private Task InitiateConnection()
+    public Task Initialize(int heartbeatInterval)
     {
-        return Task.CompletedTask;
+        var anonymous = User == null;
+        return Task.WhenAll(
+            Identify(User.Username, null, null, anonymous),
+            Heartbeat(heartbeatInterval));
     }
 
     public Task Identify(
@@ -39,30 +51,56 @@ public class UserConnection
                 new IdentifyPayload(
                     username,
                     email,
-                    password
-                    anonymous
-                ),
+                    password,
+                    anonymous),
                 null
             ).Serialize());
-        return Task.CompletedTask;
+        return _sendHandler.Identify(this);
     }
 
     public Task Heartbeat(int interval)
     {
         HeartbeatTimer = new Timer(_ =>
         {
-            if (ws.State == WebSocketState.Open)
-            {
-                
-            }
+            _sendHandler.Heartbeat(this);
         },
         null, 0, interval);
         return Task.CompletedTask;
     }
 
+    public Task ResetHeartbeat()
+    {
+        HeartbeatTimer?.Change(0, 0);
+        HeartbeatTimer?.Change(0, 41000);
+        return Task.CompletedTask;
+    }
+
+    public Task Destroy()
+    {
+        if (Destroyed)
+            return Task.CompletedTask;
+        Destroyed = true;
+        HeartbeatTimer?.Dispose();
+        ws.Dispose();
+        return Task.CompletedTask;
+    }
+
     public Task Disconnect()
     {
-        return Task.CompletedTask;
+        // NOTE: zombie connection
+        if (Destroyed)
+            return Task.CompletedTask;
+        Destroyed = true;
+
+        HeartbeatTimer?.Dispose();
+
+        return ws.CloseAsync(
+            WebSocketCloseStatus.NormalClosure,
+            "Connection closed",
+            CancellationToken.None).ContinueWith(_ =>
+            {
+                ws.Dispose();
+            });
     }
 }
 

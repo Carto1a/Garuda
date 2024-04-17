@@ -1,49 +1,27 @@
-﻿using System.Net.WebSockets;
-using System.Text;
-using Domain.Entities.Payloads;
-using Domain.Enums.Payloads;
+﻿using Client.Handlers.Websockets.Receive;
+using Client.Handlers.Websockets.Receive.Interfaces;
+using Client.Handlers.Websockets.Send;
+using Client.Handlers.Websockets.Send.Interfaces;
+using Client.Services;
+using Client.Services.Intefaces;
+using Domain.Entities.Servers.Users.Informations;
+using Microsoft.Extensions.DependencyInjection;
 
-using var ws = new ClientWebSocket();
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddSingleton<IPayloadSendHandler, PayloadSendHandler>();
+serviceCollection.AddSingleton<IPayloadReceiveHandler, PayloadReceiveHandler>();
+serviceCollection.AddSingleton<IWebsocketService, WebsocketService>();
 
-Console.Write("Coloque o seu username: ");
-var username = Console.ReadLine() ?? "anonymous";
-Console.WriteLine($"Username: {username}");
+var provider = serviceCollection.BuildServiceProvider();
 
-await ws.ConnectAsync(new Uri("ws://localhost:5281/ws"), CancellationToken.None);
-var buffer = new byte[1024];
+var WebsocketService = provider.GetService<IWebsocketService>();
 
-var indentifyPayload = IdentifyPayload
-    .Create(username, "email", "password", true);
-
-var heartbeatPayload = new Payload<object>(
-    OpCodes.Heartbeat,
-    null,
-    null);
-
-if (ws.State == WebSocketState.Open)
-    await ws.SendAsync(
-        indentifyPayload.Serialize(),
-        WebSocketMessageType.Binary,
-        true,
-        CancellationToken.None);
-
-Timer timer = new Timer(_ =>
+UserSimpleInfo? user = null;
+Console.Write("Coloque seu username: ");
+var username = Console.ReadLine();
+if (!string.IsNullOrWhiteSpace(username))
 {
-    if (ws.State == WebSocketState.Open)
-        ws.SendAsync(
-            heartbeatPayload.Serialize(),
-            WebSocketMessageType.Binary,
-            true,
-            CancellationToken.None);
-}, null, 0, 41000);
-
-while (ws.State == WebSocketState.Open)
-{
-
-    var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-    if (result.MessageType == WebSocketMessageType.Close)
-        await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
-    else
-        Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, result.Count));
+    user = new UserSimpleInfo(Guid.NewGuid(), username);
 }
 
+WebsocketService.Handle(user).Wait();

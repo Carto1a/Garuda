@@ -56,6 +56,7 @@ public class PayloadReceiveHandler
     public Task Heartbeat(Payload<object> payload, UserConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Heartbeat");
+        ws.ResetHeartbeat();
         return Task.CompletedTask;
     }
 
@@ -68,12 +69,21 @@ public class PayloadReceiveHandler
     public Task Hello(Payload<object> payload, UserConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.Hello");
-        return Task.CompletedTask;
+        var data = Deserialize<HelloPayload>(payload.d).Result;
+        return ws.Initialize(data.heartbeat_interval);
     }
 
     public Task InvalidSession(Payload<object> payload, UserConnection ws)
     {
         Console.WriteLine("PayloadReceiveHandler.InvalidSession");
+        var data = Deserialize<InvalidSessionPayload>(payload.d).Result;
+        Console.WriteLine($"Invalid session: {data.reason}");
         return Task.CompletedTask;
+    }
+
+    private Task<T> Deserialize<T>(object payload)
+    {
+        return Task.FromResult(JsonSerializer.Deserialize<T>(
+            payload.ToString()));
     }
 }
