@@ -31,8 +31,16 @@ public class WebsocketService
     public Task Handle(UserSimpleInfo? user)
     {
         using var ws = new ClientWebSocket();
-        ws.ConnectAsync(
-            new Uri("ws://localhost:5281/ws"), CancellationToken.None).Wait();
+        try
+        {
+            ws.ConnectAsync(
+                    new Uri("ws://localhost:5281/ws"), CancellationToken.None).Wait();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return Task.CompletedTask;
+        }
 
         var userConnection = new UserConnection(
             _payloadSendHandler, Guid.NewGuid(), ws, user);

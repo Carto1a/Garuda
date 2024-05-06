@@ -1,4 +1,5 @@
-﻿using Client.Handlers.Websockets.Receive;
+﻿using System.Diagnostics;
+using Client.Handlers.Websockets.Receive;
 using Client.Handlers.Websockets.Receive.Interfaces;
 using Client.Handlers.Websockets.Send;
 using Client.Handlers.Websockets.Send.Interfaces;
@@ -15,13 +16,41 @@ serviceCollection.AddSingleton<IWebsocketService, WebsocketService>();
 var provider = serviceCollection.BuildServiceProvider();
 
 var WebsocketService = provider.GetService<IWebsocketService>();
-
-UserSimpleInfo? user = null;
-Console.Write("Coloque seu username: ");
-var username = Console.ReadLine();
-if (!string.IsNullOrWhiteSpace(username))
+/* Console.CursorVisible = false; */
+Console.Clear();
+var i = 0;
+while (true)
 {
-    user = new UserSimpleInfo(Guid.NewGuid(), username);
-}
+    var (cursorLeft, cursorTop) = Console.GetCursorPosition();
+    var key = Console.ReadKey(true);
+    /* Console.Write($"\\{key.KeyChar}"); */
+    if (key.KeyChar == 'j')
+    {
+        Console.SetCursorPosition(cursorLeft, cursorTop+1);
+    }
+    /* Console.Write($"{key.KeyChar}"); */
+    /* Console.Write("\r"); */
+    /* Console.Write($"i: {i++}"); */
+    /* Stopwatch sw = new Stopwatch(); */
+    /* sw.Start(); */
+    /* Thread.Sleep(1); */
+    /* // Do Work */
+    /* sw.Stop(); */
 
-WebsocketService.Handle(user).Wait();
+    /* Console.Write("Elapsed time: {0}", sw.Elapsed.TotalMilliseconds); */
+    /* Console.Write("\r"); */
+    /* if (sw.Elapsed.TotalMilliseconds < 16) */
+    /*     Thread.Sleep(16-(int)sw.Elapsed.TotalMilliseconds); */
+
+    /* Console.Write($"i: {i++}"); */
+}
+/* UserSimpleInfo? user = null; */
+/* Console.Write("Coloque seu username: "); */
+/* var username = Console.ReadLine(); */
+/* if (!string.IsNullOrWhiteSpace(username)) */
+/* { */
+/*     user = new UserSimpleInfo(Guid.NewGuid(), username); */
+/* } */
+
+/* WebsocketService.Handle(user).Wait(); */
+
