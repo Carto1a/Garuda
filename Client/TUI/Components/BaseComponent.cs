@@ -1,12 +1,18 @@
+using Client.TUI.Components.Interfaces;
+
 namespace Client.TUI.Components;
-public class BaseComponent
+public abstract class BaseComponent
+: IBaseComponentRender
 {
-    /* public string? Name { get; set; } */
-    /* public string? Id { get; set; } */
-    /* public string? Class { get; set; } */
-    /* public string? Style { get; set; } */
-    /* public string? InnerText { get; set; } */
-    /* public List<BaseComponent> Children { get; set; } */
+    public int? Top { get; set; }
+    public int? Left { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public bool Modified { get; protected set; }
+
+    public void Unmodified() => Modified = false;
+
+    public abstract void Render();
     /* public BaseComponent() */
     /* { */
     /*     Children = new List<BaseComponent>(); */

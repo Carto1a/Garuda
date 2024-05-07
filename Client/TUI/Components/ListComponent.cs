@@ -1,9 +1,17 @@
 namespace Client.TUI.Components;
-public class ListComponent : BaseComponent
+public class ListComponent
+: BaseComponent
 {
     /* public List<BaseComponent> Items { get; set; } */
     /* public ListComponent() */
     /* { */
     /*     Items = new List<BaseComponent>(); */
     /* } */
+    public override void Render()
+    {
+        /* foreach (var item in Items) */
+        /* { */
+        /*     item.Render(); */
+        /* } */
+    }
 }
