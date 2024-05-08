@@ -1,4 +1,7 @@
+using System.Diagnostics;
 using Client.TUI.Components;
+using Client.TUI.Components.Containers;
+using Client.TUI.Components.Containers.Interfaces;
 using Client.TUI.Components.Interfaces;
 using Client.TUI.Core.Interceptors;
 
@@ -12,6 +15,8 @@ public class TUIManager
     public TextReader OriginalIn { get; set; } = Console.In;
     public List<BaseComponent> Components { get; set; } = [];
     public Queue<IBaseComponentRender> ModifiedComponents { get; set; } = [];
+    public TextComponent? ExecuteTimeRender { get; set; }
+    public TextComponent? ExecuteTimeWatch { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
     public int CursorLeft { get; set; }
@@ -70,24 +75,58 @@ public class TUIManager
         WatchModifiedThread.Start();
     }
 
+    public void InitializeDebug(
+        TextComponent? executeTimeRender = null,
+        TextComponent? executeTimeWatch = null)
+    {
+        ExecuteTimeRender = executeTimeRender;
+        ExecuteTimeWatch = executeTimeWatch;
+    }
+
     public void WatchModifiedComponents()
     {
         while (true)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
             for (int i = 0; i < Components.Count; i++)
             {
-                if (Components[i].Modified)
+                var component = (BaseComponent)Components[i];
+                if (typeof(IConteinerComponent)
+                    .IsInstanceOfType(component))
                 {
-                    ModifiedComponents.Enqueue(Components[i]);
-                    Components[i].Unmodified();
+                    var container = (IConteinerComponent)component;
+                    container.WatchModified(ModifiedComponents);
+                }
+                else if (component.Modified)
+                {
+                    ModifiedComponents.Enqueue(component);
+                    component.Unmodified();
                 }
             }
 
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            if (ExecuteTimeRender != null)
+            {
+                ExecuteTimeRender.Text = $"Tempo de execução do WatchModified: {elapsedMs}ms";
+            }
+
+            var watch1 = System.Diagnostics.Stopwatch.StartNew();
             if (ModifiedComponents.Count > 0)
             {
                 SetRenderCursor();
                 Renderer.RenderQueue(ModifiedComponents);
                 UnsetRenderCursor();
+            }
+
+            watch1.Stop();
+            var elapsedMs1 = watch1.ElapsedTicks;
+            if (ExecuteTimeWatch != null)
+            {
+                ExecuteTimeWatch.Text =
+                    $"Tempo de execução do RenderQueue: {elapsedMs1}ns";
             }
 
             // NOTE: sleep to smooth the cursor blinking

@@ -5,6 +5,7 @@ using Client.Handlers.Websockets.Send.Interfaces;
 using Client.Services;
 using Client.Services.Intefaces;
 using Client.TUI.Components;
+using Client.TUI.Components.Containers;
 using Client.TUI.Core;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,29 +21,29 @@ using Microsoft.Extensions.DependencyInjection;
 var tuiManager = new TUIManager(new TUIRenderer());
 tuiManager.Initialize();
 
+var mainContainer = new VerticalContainer();
 var textComponent = new TextComponent("Hello World");
-var textComponent2 = new TextComponent("Hello World2", 1, 0);
+var textComponent2 = new TextComponent("Hello World2");
+var textComponent3 = new TextComponent("0");
+var textComponent4 = new TextComponent("0");
 
 
-tuiManager.AddComponent(textComponent);
-tuiManager.AddComponent(textComponent2);
-tuiManager.AddComponent(new TextComponent("Hello World2", 1, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 2, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 3, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 4, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 5, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 6, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 7, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 8, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 9, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 10, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 11, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 12, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 13, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 14, 0));
-tuiManager.AddComponent(new TextComponent("Hello World2", 15, 0));
-/* tuiManager.AddComponent(new TextComponent("Hello World2", 16, 0)); */
+tuiManager.AddComponent(mainContainer);
+mainContainer.Add(textComponent);
+mainContainer.Add(textComponent2);
+mainContainer.Add(new TextComponent("Hello World3"));
+mainContainer.Add(new TextComponent("Hello World4"));
+mainContainer.Add(new TextComponent("Hello World5"));
+mainContainer.Add(new TextComponent("Hello World6"));
+mainContainer.Add(new TextComponent("Hello World7"));
+mainContainer.Add(new TextComponent("Hello World8"));
+mainContainer.Add(new TextComponent("Hello World9"));
+mainContainer.Add(textComponent4);
+mainContainer.Add(textComponent3);
 
+tuiManager.InitializeDebug(
+    textComponent3,
+    textComponent4);
 tuiManager.InitializeRender();
 
 Task task = new Task(() =>
@@ -52,6 +53,7 @@ Task task = new Task(() =>
     {
         i += 1;
         textComponent.Update($"Hello World {i}");
+        Thread.Sleep(1);
     }
 });
 
@@ -62,6 +64,7 @@ Task task2 = new Task(() =>
     {
         i += 1;
         textComponent2.Update($"Hello World {i}");
+        /* Thread.Sleep(10); */
     }
 });
 

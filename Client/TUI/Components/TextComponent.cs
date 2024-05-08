@@ -2,7 +2,19 @@ namespace Client.TUI.Components;
 public class TextComponent
 : BaseComponent
 {
-    public string? Text { get; private set; }
+    private string? _text { get; set; }
+    public string? Text
+    {
+        get => _text;
+        set
+        {
+            var temp = value ?? string.Empty;
+            _text = temp;
+            MaxLastLength = temp.Length;
+            Modified = true;
+        }
+    }
+    public int MaxLastLength { get; set; } = 0;
 
     public TextComponent(
         string text,
@@ -12,6 +24,7 @@ public class TextComponent
         int height)
     {
         Text = text;
+        MaxLastLength = text.Length;
         Top = top;
         Left = left;
         Width = width;
@@ -27,18 +40,21 @@ public class TextComponent
         Left = left;
         Text = text;
         Width = text.Length;
+        MaxLastLength = text.Length;
         Height = 1;
     }
 
     public TextComponent(string text)
     {
         Text = text;
+        MaxLastLength = text.Length;
     }
 
     public void Update(string text)
     {
         Modified = true;
         Text = text;
+        MaxLastLength = text.Length;
     }
 
     public override void Render()
@@ -49,12 +65,6 @@ public class TextComponent
         }
 
         Console.SetCursorPosition((int)Left, (int)Top);
-        Console.Write(Text);
-        /* Console.SetCursorPosition(Left, Top); */
-        /* if (Value == null) */
-        /* { */
-        /*     Value = Default; */
-        /* } */
-        /* Console.Write(Value); */
+        Console.Write(_text?.PadRight(MaxLastLength + 1, ' '));
     }
 }
