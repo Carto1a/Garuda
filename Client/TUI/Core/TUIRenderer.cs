@@ -5,7 +5,6 @@ namespace Client.TUI.Core;
 public class TUIRenderer
 {
     public Thread? RenderThread { get; set; }
-    public List<IBaseComponentRender> Components { get; set; } = [];
 
     public void UpdateComponents(List<BaseComponent> components)
     {
@@ -14,6 +13,20 @@ public class TUIRenderer
     public void Render(IBaseComponentRender component)
     {
         component.Render();
+    }
+
+    public void RenderList(List<BaseComponent> components)
+    {
+        for (int i = 0; i < components.Count; i++)
+        {
+            Render(components[i]);
+        }
+    }
+
+    public void RenderQueue(Queue<IBaseComponentRender> components)
+    {
+        while (components.Count > 0)
+            Render(components.Dequeue());
     }
 
     /* private void MainRender() */

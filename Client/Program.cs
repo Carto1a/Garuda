@@ -26,6 +26,22 @@ var textComponent2 = new TextComponent("Hello World2", 1, 0);
 
 tuiManager.AddComponent(textComponent);
 tuiManager.AddComponent(textComponent2);
+tuiManager.AddComponent(new TextComponent("Hello World2", 1, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 2, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 3, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 4, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 5, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 6, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 7, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 8, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 9, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 10, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 11, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 12, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 13, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 14, 0));
+tuiManager.AddComponent(new TextComponent("Hello World2", 15, 0));
+/* tuiManager.AddComponent(new TextComponent("Hello World2", 16, 0)); */
 
 tuiManager.InitializeRender();
 

@@ -24,34 +24,46 @@ public class TUIManager
 
     public void Initialize()
     {
-        /* try */
-        /* { */
-            Console.SetOut(new WriteInterceptorBuffer());
+        try
+        {
             // NOTE: desativar o out e in do console
+            Console.SetOut(new WriteInterceptorBuffer());
+
             /* Console.CursorVisible = false; */
-            /* Console.Clear(); */
+
             // NOTE: não funciona no debug console
             Width = Console.WindowWidth;
             Height = Console.WindowHeight;
             CursorLeft = Console.CursorLeft;
             CursorTop = Console.CursorTop;
-        /* } */
-        /* catch (Exception ex) */
-        /* { */
-        /*     Console.SetOut(OriginalOut); */
-        /*     Console.WriteLine("Não foi possível inicializar o TUIManager: " + ex.Message); */
-        /* } */
+        }
+        catch (Exception ex)
+        {
+            Console.SetOut(OriginalOut);
+            Console.WriteLine("Não foi possível inicializar o TUIManager: " + ex.Message);
+        }
+    }
+
+    public void SetRenderCursor()
+    {
+        Console.SetOut(OriginalOut);
+        Console.CursorVisible = false;
+    }
+
+    public void UnsetRenderCursor()
+    {
+        Console.SetOut(new WriteInterceptorBuffer());
+        Console.CursorVisible = true;
+        Console.SetCursorPosition(CursorLeft, CursorTop);
     }
 
     public void InitializeRender()
     {
         Console.Clear();
-        Console.SetOut(OriginalOut);
-        for (int i = 0; i < Components.Count; i++)
-        {
-            Renderer.Render(Components[i]);
-        }
-        Console.SetOut(new WriteInterceptorBuffer());
+
+        SetRenderCursor();
+        Renderer.RenderList(Components);
+        UnsetRenderCursor();
 
         WatchModifiedThread = new Thread(WatchModifiedComponents);
         WatchModifiedThread.Name = "WatchModifiedThread";
@@ -70,18 +82,16 @@ public class TUIManager
                     Components[i].Unmodified();
                 }
             }
+
             if (ModifiedComponents.Count > 0)
             {
-                Console.SetOut(OriginalOut);
-                while (ModifiedComponents.Count > 0)
-                    Renderer.Render(ModifiedComponents.Dequeue());
-
-                Console.SetOut(new WriteInterceptorBuffer());
+                SetRenderCursor();
+                Renderer.RenderQueue(ModifiedComponents);
+                UnsetRenderCursor();
             }
-            /* else */
-            /* { */
-            /*     Thread.Sleep(16); */
-            /* } */
+
+            // NOTE: sleep to smooth the cursor blinking
+            Thread.Sleep(1);
         }
     }
 
