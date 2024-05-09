@@ -67,7 +67,7 @@ public class TUIManager
         Console.Clear();
 
         SetRenderCursor();
-        Renderer.RenderList(Components);
+        Renderer.Render(Components);
         UnsetRenderCursor();
 
         WatchModifiedThread = new Thread(WatchModifiedComponents);
@@ -117,7 +117,7 @@ public class TUIManager
             if (ModifiedComponents.Count > 0)
             {
                 SetRenderCursor();
-                Renderer.RenderQueue(ModifiedComponents);
+                Renderer.Render(ModifiedComponents);
                 UnsetRenderCursor();
             }
 
@@ -143,6 +143,12 @@ public class TUIManager
 
         if (component.Left == null)
             component.Left = 0;
+
+        if (component.Width == null)
+            component.Width = Width;
+
+        if (component.Height == null)
+            component.Height = Height;
 
         Components.Add(component);
     }

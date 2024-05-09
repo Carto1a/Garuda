@@ -4,29 +4,39 @@ using Client.TUI.Components.Interfaces;
 namespace Client.TUI.Core;
 public class TUIRenderer
 {
-    public Thread? RenderThread { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
 
     public void UpdateComponents(List<BaseComponent> components)
     {
     }
 
-    public void Render(IBaseComponentRender component)
+    private void BaseRender(IBaseComponentRender component)
     {
+        /* if (component. ) */
         component.Render();
     }
 
-    public void RenderList(List<BaseComponent> components)
+    public void Render(List<BaseComponent> components)
     {
+        UpdateSize();
         for (int i = 0; i < components.Count; i++)
         {
-            Render(components[i]);
+            BaseRender(components[i]);
         }
     }
 
-    public void RenderQueue(Queue<IBaseComponentRender> components)
+    public void Render(Queue<IBaseComponentRender> components)
     {
+        UpdateSize();
         while (components.Count > 0)
-            Render(components.Dequeue());
+            BaseRender(components.Dequeue());
+    }
+
+    public void UpdateSize()
+    {
+        Width = Console.WindowWidth;
+        Height = Console.WindowHeight;
     }
 
     /* private void MainRender() */

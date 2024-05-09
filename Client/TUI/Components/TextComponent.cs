@@ -2,6 +2,7 @@ namespace Client.TUI.Components;
 public class TextComponent
 : BaseComponent
 {
+    public int MaxLastLength { get; set; } = 0;
     private string? _text { get; set; }
     public string? Text
     {
@@ -14,7 +15,6 @@ public class TextComponent
             Modified = true;
         }
     }
-    public int MaxLastLength { get; set; } = 0;
 
     public TextComponent(
         string text,

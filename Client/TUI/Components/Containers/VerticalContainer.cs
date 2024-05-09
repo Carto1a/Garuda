@@ -16,7 +16,7 @@ IConteinerComponent
 
     public void Add(BaseComponent component)
     {
-        var top = Children.Count;
+        var top = Children.Count + Top;
         component.Top = top;
         component.Left = Left;
         Children.Add(component);
