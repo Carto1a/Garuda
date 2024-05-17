@@ -2,7 +2,7 @@ using Client.TUI.Components.Interfaces;
 
 namespace Client.TUI.Components;
 public abstract class BaseComponent
-: IBaseComponentRender
+: IBaseComponent
 {
     public int? Top { get; set; }
     public int? Left { get; set; }
@@ -13,6 +13,11 @@ public abstract class BaseComponent
     public void Unmodified() => Modified = false;
 
     public abstract void Render();
+
+    public void DeclareSize(int width, int height)
+    {
+        throw new NotImplementedException();
+    }
     /* public BaseComponent() */
     /* { */
     /*     Children = new List<BaseComponent>(); */

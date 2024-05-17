@@ -4,7 +4,8 @@ using Client.TUI.Components.Interfaces;
 namespace Client.TUI.Components.Containers;
 public class VerticalContainer
 : BaseComponent,
-IConteinerComponent
+IConteinerComponent,
+IVerticalContainer
 {
     public List<BaseComponent> Children { get; private set; } = [];
 
@@ -36,7 +37,7 @@ IConteinerComponent
         }
     }
 
-    public Task WatchModifiedAsync(Queue<IBaseComponentRender> queue)
+    public Task WatchModifiedAsync(Queue<IBaseComponent> queue)
     {
         return Task.Run(() =>
         {
@@ -51,8 +52,7 @@ IConteinerComponent
         });
     }
 
-
-    public void WatchModified(Queue<IBaseComponentRender> queue)
+    public void WatchModified(Queue<IBaseComponent> queue)
     {
         for (int i = 0; i < Children.Count; i++)
         {
@@ -62,5 +62,15 @@ IConteinerComponent
                 Children[i].Unmodified();
             }
         }
+    }
+
+    public void MoveComponentLeft(IBaseComponent component, int steps)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MoveComponentRight(IBaseComponent component, int steps)
+    {
+        throw new NotImplementedException();
     }
 }

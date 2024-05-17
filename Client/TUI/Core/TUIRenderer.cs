@@ -11,7 +11,7 @@ public class TUIRenderer
     {
     }
 
-    private void BaseRender(IBaseComponentRender component)
+    private void BaseRender(IBaseComponent component)
     {
         /* if (component. ) */
         component.Render();
@@ -26,7 +26,7 @@ public class TUIRenderer
         }
     }
 
-    public void Render(Queue<IBaseComponentRender> components)
+    public void Render(Queue<IBaseComponent> components)
     {
         UpdateSize();
         while (components.Count > 0)

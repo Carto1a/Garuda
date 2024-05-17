@@ -31,14 +31,15 @@ var textComponent4 = new TextComponent("0");
 tuiManager.AddComponent(mainContainer);
 /* mainContainer.Add(textComponent); */
 /* mainContainer.Add(textComponent2); */
-mainContainer.Add(new TextComponent("Hellfjlsdkajflsdkklkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkko World3sdklfjksljfklsjfkjsdklfjsdklfjsdklfjsdkljflsdkjfklsdjfkdskfsdklfjdskljfklsdjfkdsjfksdjkfsjdklfjsdklfjskldjfklsdjfkjdsklj"));
+/* mainContainer.Add(new TextComponent( */
+/*     "Hellfjlsdkajflsdkklkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkko World3sdklfjksljfklsjfkjsdklfjsdklfjsdklfjsdkljflsdkjfklsdjfkdskfsdklfjdskljfklsdjfkdsjfksdjkfsjdklfjsdklfjskldjfklsdjfkjdsklj")); */
 /* mainContainer.Add(new TextComponent("Hello World4")); */
 /* mainContainer.Add(new TextComponent("Hello World5")); */
 /* mainContainer.Add(new TextComponent("Hello World6")); */
 /* mainContainer.Add(new TextComponent("Hello World7")); */
 /* mainContainer.Add(new TextComponent("Hello World8")); */
 /* mainContainer.Add(new TextComponent("Hello World9")); */
-/* mainContainer.Add(textComponent4); */
+mainContainer.Add(textComponent4);
 /* mainContainer.Add(textComponent3); */
 
 tuiManager.InitializeDebug(

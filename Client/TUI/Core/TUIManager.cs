@@ -14,7 +14,7 @@ public class TUIManager
     public TextWriter OriginalOut { get; set; } = Console.Out;
     public TextReader OriginalIn { get; set; } = Console.In;
     public List<BaseComponent> Components { get; set; } = [];
-    public Queue<IBaseComponentRender> ModifiedComponents { get; set; } = [];
+    public Queue<IBaseComponent> ModifiedComponents { get; set; } = [];
     public TextComponent? ExecuteTimeRender { get; set; }
     public TextComponent? ExecuteTimeWatch { get; set; }
     public int Width { get; set; }

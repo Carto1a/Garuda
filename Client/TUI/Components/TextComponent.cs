@@ -24,7 +24,6 @@ public class TextComponent
         int height)
     {
         Text = text;
-        MaxLastLength = text.Length;
         Top = top;
         Left = left;
         Width = width;
@@ -40,21 +39,18 @@ public class TextComponent
         Left = left;
         Text = text;
         Width = text.Length;
-        MaxLastLength = text.Length;
         Height = 1;
     }
 
     public TextComponent(string text)
     {
         Text = text;
-        MaxLastLength = text.Length;
     }
 
     public void Update(string text)
     {
         Modified = true;
         Text = text;
-        MaxLastLength = text.Length;
     }
 
     public override void Render()

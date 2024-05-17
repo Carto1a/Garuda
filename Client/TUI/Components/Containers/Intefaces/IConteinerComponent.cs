@@ -6,6 +6,6 @@ public interface IConteinerComponent
     abstract void Add(BaseComponent component);
     abstract void Remove(BaseComponent component);
     abstract void Render();
-    abstract Task WatchModifiedAsync(Queue<IBaseComponentRender> queue);
-    abstract void WatchModified(Queue<IBaseComponentRender> queue);
+    abstract Task WatchModifiedAsync(Queue<IBaseComponent> queue);
+    abstract void WatchModified(Queue<IBaseComponent> queue);
 }
