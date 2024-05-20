@@ -18,6 +18,7 @@ public abstract class BaseComponent
     {
         throw new NotImplementedException();
     }
+
     /* public BaseComponent() */
     /* { */
     /*     Children = new List<BaseComponent>(); */

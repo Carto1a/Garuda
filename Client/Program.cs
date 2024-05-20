@@ -27,6 +27,11 @@ var textComponent2 = new TextComponent("Hello World2");
 var textComponent3 = new TextComponent("0");
 var textComponent4 = new TextComponent("0");
 
+var cursorposleft = new TextComponent("0");
+var cursorpostop = new TextComponent("0");
+var consoleleft = new TextComponent("0");
+var consoletop = new TextComponent("0");
+
 
 tuiManager.AddComponent(mainContainer);
 /* mainContainer.Add(textComponent); */
@@ -40,6 +45,10 @@ tuiManager.AddComponent(mainContainer);
 /* mainContainer.Add(new TextComponent("Hello World8")); */
 /* mainContainer.Add(new TextComponent("Hello World9")); */
 mainContainer.Add(textComponent4);
+mainContainer.Add(cursorposleft);
+mainContainer.Add(cursorpostop);
+mainContainer.Add(consoleleft);
+mainContainer.Add(consoletop);
 /* mainContainer.Add(textComponent3); */
 
 tuiManager.InitializeDebug(
@@ -60,19 +69,19 @@ Task task = new Task(() =>
 
 Task task2 = new Task(() =>
 {
-    ulong i = 0;
     while (true)
     {
-        i += 1;
-        textComponent2.Update($"Hello World {i}");
-        /* Thread.Sleep(10); */
+        cursorposleft.Update($"CursorLeft: {Console.CursorLeft}/ Manager CursorLeft: {tuiManager.CursorLeft}");
+        cursorpostop.Update($"CursorTop: {Console.CursorTop}/ Manager CursorTop: {tuiManager.CursorTop}");
+        consoleleft.Update($"ConsoleLeft: {Console.WindowWidth}");
+        consoletop.Update($"ConsoleTop: {Console.WindowHeight}");
+        Thread.Sleep(10);
     }
 });
 
 /* task.Start(); */
-/* task2.Start(); */
+task2.Start();
 
-task.Wait();
 task2.Wait();
 
 /* { */

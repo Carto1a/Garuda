@@ -59,7 +59,10 @@ public class TUIManager
     {
         Console.SetOut(new WriteInterceptorBuffer());
         Console.CursorVisible = true;
-        Console.SetCursorPosition(CursorLeft, CursorTop);
+
+        Resize();
+        var (cursorLeft, cursorTop) = UpdateCursor();
+        Console.SetCursorPosition(cursorLeft, cursorTop);
     }
 
     public void InitializeRender()
@@ -110,7 +113,8 @@ public class TUIManager
 
             if (ExecuteTimeRender != null)
             {
-                ExecuteTimeRender.Text = $"Tempo de execução do WatchModified: {elapsedMs}ms";
+                ExecuteTimeRender.Text =
+                    $"Tempo de execução do WatchModified: {elapsedMs}ms";
             }
 
             var watch1 = System.Diagnostics.Stopwatch.StartNew();
@@ -132,6 +136,49 @@ public class TUIManager
             // NOTE: sleep to smooth the cursor blinking
             Thread.Sleep(1);
         }
+    }
+
+    public (int, int) UpdateCursor()
+    {
+        var currentWidth = Console.WindowWidth;
+        var currentHeight = Console.WindowHeight;
+
+        var cursorleft = Console.CursorLeft;
+        var cursorTop = Console.CursorTop;
+
+        if (currentHeight < Height)
+        {
+            cursorTop = currentHeight - Height;
+        }
+
+        return (CursorLeft, cursorTop);
+    }
+
+    public void Resize()
+    {
+        var currentWidth = Console.WindowWidth;
+        var currentHeight = Console.WindowHeight;
+        if (currentWidth == Width || currentHeight == Height)
+            return;
+
+        /* if (currentHeight < Height) */
+        /* { */
+        /*     CursorTop = currentHeight - 4; */
+        /*     Console.SetCursorPosition(CursorLeft, CursorTop -5); */
+        /* } */
+
+        /* if (CursorTop >= currentHeight) */
+        /* { */
+        /*     CursorTop = currentHeight - 4; */
+        /* } */
+
+        /* if (CursorLeft >= currentWidth) */
+        /* { */
+        /*     CursorLeft = currentWidth - 4; */
+        /* } */
+
+        Width = Console.WindowWidth;
+        Height = Console.WindowHeight;
     }
 
     public void AddComponent(BaseComponent component)
