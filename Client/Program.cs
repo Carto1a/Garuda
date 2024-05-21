@@ -34,6 +34,7 @@ using TermUI.Core;
 /* var consoletop = new TextComponent("0"); */
 
 
+
 var manager = new TUIManager();
 manager.Initialize();
 manager.MainLoop();
