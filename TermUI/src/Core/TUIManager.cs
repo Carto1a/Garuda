@@ -25,8 +25,7 @@ public class TUIManager
     {
         while (true)
         {
-            var key = Console.ReadKey(true).Key;
-            _keymap.ExecuteKeymap(key);
+            _keymap.ReadKeys();
             _cursor.Move();
         }
     }

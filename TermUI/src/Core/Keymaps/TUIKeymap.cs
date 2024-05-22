@@ -1,12 +1,13 @@
 namespace TermUI.Core.Keymaps;
 public class TUIKeymap
 {
-    public ConsoleKey Key { get; set; }
+    public string Keys { get; set; }
     public Action Action { get; set; }
+    public string Description { get; set; }
 
-    public TUIKeymap(ConsoleKey key, Action action)
+    public TUIKeymap(string keys, Action action)
     {
-        Key = key;
+        Keys = keys;
         Action = action;
     }
 }
