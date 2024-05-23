@@ -19,6 +19,21 @@ public class TUIManager
         // mudar no futuro
         _cursor = new TUICursor();
         _keymap = new TUIKeymapManager(_cursor);
+
+
+        var keymap0 = new TUIKeymap();
+        keymap0.SetKeys("<C-w>lrl");
+        keymap0.SetAction(() => _cursor.MoveLeft());
+        keymap0.Build();
+
+        var keymap1 = new TUIKeymap("<C-w>lrl",
+            () => _cursor.MoveLeft());
+
+        var keymap2 = new TUIKeymap("lrl",
+            () => _cursor.MoveLeft());
+
+        var keymap3 = new TUIKeymap("<space>lrl",
+            () => _cursor.MoveLeft());
     }
 
     public void MainLoop()
