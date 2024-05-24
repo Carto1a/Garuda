@@ -3,6 +3,7 @@ public class TUIKeymapManager
 {
     // {count?} {keymap} {object}
     // <C-a>fad
+    // <C-S-w>
     // <space>
     private TUICursor _cursor { get; set; }
     private System.Threading.Timer _TimeoutKeymap;
@@ -20,7 +21,6 @@ public class TUIKeymapManager
 
     private List<TUIKey> _rootkeymapsctrl { get; set; } = new();
     private List<TUIKey> _rootkeysmapalt { get; set; } = new();
-    private List<TUIKey> _rootkeymapsshift { get; set; } = new();
 
     private bool _canCount { get; set; } = true;
 
@@ -93,9 +93,9 @@ public class TUIKeymapManager
         _canCount = false;
     }
 
-    public void SetKeymap(ConsoleKey key, Action action)
+    public void SetKeymap(TUIKeymap keymap)
     {
-        Keymaps[key] = action;
+        // Parse keys
     }
 
     public void RemoveKeymap(ConsoleKey key)

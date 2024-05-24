@@ -9,6 +9,7 @@ using Client.Services.Intefaces;
 /* using Client.TUI.Core; */
 using Microsoft.Extensions.DependencyInjection;
 using TermUI.Core;
+using TermUI.Core.Keymaps;
 
 /* var serviceCollection = new ServiceCollection(); */
 /* serviceCollection.AddSingleton<IPayloadSendHandler, PayloadSendHandler>(); */
@@ -33,10 +34,16 @@ using TermUI.Core;
 /* var consoleleft = new TextComponent("0"); */
 /* var consoletop = new TextComponent("0"); */
 
-
+var keymap0 = new TUIKeymap()
+    .SetKeys("gl")
+    .SetAction(() =>
+        Console.WriteLine("Hello World"));
 
 var manager = new TUIManager();
 manager.Initialize();
+
+manager._keymap.AddKeymap(keymap0);
+
 manager.MainLoop();
 
 /* tuiManager.AddComponent(mainContainer); */

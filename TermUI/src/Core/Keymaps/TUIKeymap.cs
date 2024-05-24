@@ -16,25 +16,29 @@ public class TUIKeymap
 
     public TUIKeymap() { }
 
-    public void SetAction(Action action)
+    public TUIKeymap SetAction(Action action)
     {
         Action = action;
+        return this;
     }
 
-    public void SetKeys(string keys)
+    public TUIKeymap SetKeys(string keys)
     {
         Keys = keys;
+        return this;
     }
 
-    public void SetDescription(string description)
+    public TUIKeymap SetDescription(string description)
     {
         Description = description;
+        return this;
     }
 
-    public void SetModifiers(bool canCount, bool canObject)
+    public TUIKeymap SetModifiers(bool canCount, bool canObject)
     {
         CanCount = canCount;
         CanObject = canObject;
+        return this;
     }
 
     public void Build()
