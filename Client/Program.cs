@@ -42,7 +42,7 @@ var keymap0 = new TUIKeymap()
 var manager = new TUIManager();
 manager.Initialize();
 
-manager._keymap.AddKeymap(keymap0);
+/* manager._keymap.AddKeymap(keymap0); */
 
 manager.MainLoop();
 

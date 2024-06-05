@@ -1,6 +1,9 @@
 using TermUI.Core.Keymaps;
 
 namespace TermUI.Core;
+/// <summary>
+/// Classe que gerencia a interface de texto.
+/// </summary>
 public class TUIManager
 {
     public TUICursor _cursor { get; set; }
@@ -9,6 +12,13 @@ public class TUIManager
     public TextWriter OriginalOut { get; set; } = Console.Out;
     public TextReader OriginalIn { get; set; } = Console.In;
 
+    /// <summary>
+    /// Largura da janela.
+    /// </summary>
+    /// <value></value>
+    /// <returns>
+    /// retonar o tamanho da tela em quatiade de caracteres.
+    /// </returns>
     public int Width { get; set; }
     public int Height { get; set; }
     public int CursorLeft { get; set; }
@@ -36,6 +46,9 @@ public class TUIManager
             () => _cursor.MoveLeft());
     }
 
+    /// <summary>
+    /// Inicia o loop principal da interface de texto.
+    /// </summary>
     public void MainLoop()
     {
         while (true)

@@ -1,4 +1,7 @@
 namespace TermUI.Core.Keymaps;
+/// <summary>
+/// Classe que representa uma tecla para configuração dos kemaps.
+/// </summary>
 public class TUIKey
 {
     public char Key { get; set; }

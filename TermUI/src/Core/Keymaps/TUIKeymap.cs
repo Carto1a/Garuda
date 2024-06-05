@@ -16,6 +16,11 @@ public class TUIKeymap
 
     public TUIKeymap() { }
 
+    /// <summary>
+    /// Define a ação a ser executada.
+    /// </summary>
+    /// <param name="action">Ação a ser executada.</param>
+    /// <returns>Retorna a instância atual.</returns>
     public TUIKeymap SetAction(Action action)
     {
         Action = action;

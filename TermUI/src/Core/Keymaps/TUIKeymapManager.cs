@@ -38,6 +38,9 @@ public class TUIKeymapManager
         Keymaps.Add(ConsoleKey.RightArrow, () => cursor.MoveRight());
     }
 
+    /// <summary>
+    /// Lê as teclas pressionadas.
+    /// </summary>
     public void ReadKeys()
     {
         while (true)
